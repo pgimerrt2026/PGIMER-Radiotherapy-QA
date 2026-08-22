@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PGIMER Chandigarh — Monthly Output &amp; Beam Quality QA — TrueBeam SVC (TRS-398)</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#12262A;
+    --ink-soft:#3E5459;
+    --paper:#F4F7F6;
+    --card:#FFFFFF;
+    --line:#D9E2E1;
+    --line-soft:#EAF0EF;
+    --pass-bg:#E7F5EA; --pass-fg:#1E7A34; --pass-line:#BEE3C6;
+    --fail-bg:#FBEAE9; --fail-fg:#B3261E; --fail-line:#F1C4C1;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --disp: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  .sec-ph{ --accent:#0E7C86; --accent-dark:#0A5E66; }
+  .sec-el{ --accent:#B5590E; --accent-dark:#8F4708; }
+  .sec-tpr{ --accent:#5B3E9E; --accent-dark:#43297A; }
+  .sec-mech{ --accent:#1A6B3C; --accent-dark:#12522C; }
+  .sec-mlc{ --accent:#0E5FA6; --accent-dark:#0A4A82; }
+  .mlc-src{font-size:10px; font-weight:600; letter-spacing:.02em; padding:1px 7px; border-radius:999px; display:inline-block; margin-left:6px; vertical-align:middle;}
+  .mlc-src.a{background:#EAF2FB; color:#0A4A82; border:1px solid #C7DEF3;}
+  .mlc-src.b{background:#FBF3DE; color:#7A5B0E; border:1px solid #E9D8A6;}
+  .mlc-note{font-size:11px; color:var(--ink-soft); margin:4px 0 10px; line-height:1.4;}
+  .mech-card select{font-family:var(--body); font-size:12.5px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; background:#FBFDFC; color:var(--ink);}
+  .mech-card .regbox{background:#F7FAF9; border:1px solid var(--line-soft); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:11.5px; display:flex; gap:18px; flex-wrap:wrap;}
+  .mech-card .regbox b{color:var(--ink);}
+  .mech-card .setuprow{display:flex; gap:10px 18px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-soft); margin:0 0 12px;}
+  .mech-card .setuprow .fld2{display:flex; flex-direction:column; gap:3px;}
+  .mech-card .setuprow label{font-size:10.5px; font-weight:600; color:var(--ink-soft);}
+  .mech-card .setuprow input{width:120px;}
+  .mech-card{background:#fff; border:1px solid var(--line); border-top:4px solid var(--accent); border-radius:10px; padding:16px 20px; margin-bottom:16px;}
+  .mech-card h3{font-family:var(--disp); font-size:14.5px; margin:0 0 3px; color:var(--ink);}
+  .mech-card .refline{font-size:11.5px; color:var(--ink-soft); margin:0 0 12px;}
+  .mech-card table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .mech-card th{background:#F0F4F3; color:var(--ink-soft); font-size:11px; text-transform:uppercase; letter-spacing:.03em; text-align:left; padding:7px 8px; border-bottom:1px solid var(--line);}
+  .mech-card td{padding:6px 8px; border-bottom:1px solid var(--line-soft); vertical-align:middle;}
+  .mech-card tr:last-child td{border-bottom:none;}
+  .mech-card input[type=number], .mech-card input[type=text]{width:76px; font-family:var(--mono); font-size:12.5px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; background:#FBFDFC; color:var(--ink);}
+  .mech-card input.wide{width:150px;}
+  .mech-card input.narrow{width:56px;}
+  .tolcell{font-family:var(--mono); font-size:11.5px; color:var(--ink-soft);}
+  .pf{font-family:var(--mono); font-weight:700; font-size:11.5px; padding:3px 9px; border-radius:999px; display:inline-block; border:1px solid var(--line);}
+  .pf.pass{background:var(--pass-bg); color:var(--pass-fg); border-color:var(--pass-line);}
+  .pf.fail{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+  .mech-footerbox{background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; display:flex; gap:24px; flex-wrap:wrap;}
+  .mech-footerbox .fld{display:flex; flex-direction:column; gap:5px;}
+  .mech-footerbox label{font-size:11.5px; font-weight:600; color:var(--ink-soft);}
+  .mech-footerbox input{width:280px;}
+
+  /* ===== QA Evidence Gallery (reusable, per-test) ===== */
+  .eg-wrap{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line);}
+  .eg-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:9px;}
+  .eg-title{font-family:var(--disp); font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .eg-optional{font-weight:400; font-size:10.5px; color:#8A9895;}
+  .eg-addbtn{
+    font-family:var(--body); font-size:12px; font-weight:600; color:var(--accent-dark, #0A5E66);
+    background:#F0F7F6; border:1px solid var(--line); border-radius:8px; padding:6px 12px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.15s;
+  }
+  .eg-addbtn:hover{background:#E4F0EE;}
+  .eg-addbtn.eg-busy{opacity:.6; pointer-events:none;}
+  .eg-addbtn.eg-busy::after{content:'Processing…';}
+  .eg-strip{display:flex; flex-wrap:wrap; gap:10px;}
+  .eg-empty{font-size:11.5px; color:#9AA6A3; font-style:italic; padding:4px 0;}
+  .eg-thumb{
+    width:128px; background:#FBFDFC; border:1px solid var(--line); border-radius:8px;
+    padding:6px; display:flex; flex-direction:column; gap:5px;
+  }
+  .eg-thumb img{
+    width:100%; height:92px; object-fit:cover; border-radius:5px; cursor:zoom-in;
+    background:#EDF2F1; border:1px solid var(--line-soft); display:block;
+  }
+  .eg-caption{
+    width:100%; font-size:10.5px; padding:4px 5px; border:1px solid var(--line); border-radius:5px;
+    background:#fff; color:var(--ink); font-family:var(--body);
+  }
+  .eg-thumb-actions{display:flex; gap:4px; flex-wrap:wrap;}
+  .eg-mini{
+    font-size:9.5px; font-weight:600; padding:3px 6px; border-radius:5px; border:1px solid var(--line);
+    background:#fff; color:var(--ink-soft); cursor:pointer; text-align:center; flex:1 1 auto;
+  }
+  .eg-mini:hover{background:#F0F4F3;}
+  .eg-remove:hover{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+
+  .eg-viewer{
+    display:none; position:fixed; inset:0; background:rgba(10,18,20,.92); z-index:9999;
+    align-items:center; justify-content:center; flex-direction:column; padding:20px;
+  }
+  .eg-viewer.open{display:flex;}
+  .eg-viewer-stage{max-width:100%; max-height:82vh; overflow:hidden; touch-action:none; display:flex; align-items:center; justify-content:center;}
+  .eg-viewer-stage img{max-width:100%; max-height:82vh; object-fit:contain; touch-action:none; transition:transform .05s linear; user-select:none;}
+  .eg-viewer-cap{color:#EAF0EF; font-size:13px; margin-top:14px; text-align:center; max-width:90vw;}
+  .eg-viewer-close{
+    position:absolute; top:16px; right:20px; width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.3);
+    font-size:20px; line-height:1; cursor:pointer;
+  }
+  .eg-viewer-close:hover{background:rgba(255,255,255,.22);}
+  @media (max-width:640px){
+    .eg-thumb{width:104px;}
+    .eg-thumb img{height:76px;}
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.45;
+    padding:20px 20px 70px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  /* ===== Shared letterhead ===== */
+  .letterhead{
+    background:#fff; border:1px solid var(--line); border-top:5px solid #12262A;
+    border-radius:12px; padding:18px 26px; margin-bottom:14px;
+  }
+  .lh-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  .lh-inst{font-family:var(--disp); font-weight:700; font-size:18px; letter-spacing:-.01em; color:var(--ink); margin:0;}
+  .lh-dept{font-size:13px; color:var(--ink-soft); margin:2px 0 0;}
+  .lh-master{font-size:11.5px; color:#8A6D2E; margin:6px 0 0; font-weight:600; letter-spacing:.03em;}
+  .lh-master .tag{background:#FBF3DE; border:1px solid #E9D8A6; color:#7A5B0E; padding:2px 8px; border-radius:999px; font-family:var(--mono); font-size:10px; margin-right:6px;}
+  .lh-docbox{
+    display:grid; grid-template-columns:auto auto; gap:5px 10px; font-family:var(--mono); font-size:11.5px;
+    color:var(--ink-soft); text-align:right; min-width:220px;
+  }
+  .lh-docbox label{font-weight:600; color:var(--ink); text-align:left;}
+  .lh-docbox input{
+    font-family:var(--mono); font-size:11.5px; padding:3px 6px; border:1px solid var(--line);
+    border-radius:5px; background:#FBFDFC; text-align:left; width:150px;
+  }
+
+  /* ===== Tabs ===== */
+  .tabbar{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
+  .tabbtn{
+    font-family:var(--disp); font-weight:600; font-size:13.5px; cursor:pointer;
+    padding:10px 18px; border-radius:10px 10px 0 0; border:1px solid var(--line); border-bottom:none;
+    background:#E7ECEB; color:var(--ink-soft); transition:.15s;
+  }
+  .tabbtn .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle;}
+  .tabbtn[data-tab="ph"] .dot{background:#0E7C86;}
+  .tabbtn[data-tab="el"] .dot{background:#B5590E;}
+  .tabbtn[data-tab="tpr"] .dot{background:#5B3E9E;}
+  .tabbtn[data-tab="mech"] .dot{background:#1A6B3C;}
+  .tabbtn.active{background:#fff; color:var(--ink); box-shadow:0 -2px 0 var(--ink) inset;}
+  .tabbtn:not(.active):hover{background:#DDE6E4;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panel-standalone{display:block;}
+
+  /* ===== New Daily / Monthly / Annual navigation levels ===== */
+  .mainview{display:none;}
+  .mainview.active{display:block;}
+  .subpanel{display:none;}
+  .subpanel.active{display:block;}
+
+  .maintabbtn{font-size:14.5px; padding:11px 22px;}
+
+  .tabbar.subtabbar{margin:2px 0 16px;}
+  .subtabbtn{font-size:12.5px; padding:8px 15px; background:#EFF3F2;}
+  .subtabbtn.active{background:#fff;}
+
+  .tabbar.outputsubtabbar{margin:0 0 16px;}
+
+  .tabbar{overflow-x:auto; -webkit-overflow-scrolling:touch; flex-wrap:nowrap;}
+  .tabbar .tabbtn{white-space:nowrap; flex:0 0 auto;}
+  @media (min-width:641px){
+    .tabbar{flex-wrap:wrap;}
+  }
+
+  .placeholder-box{
+    background:#fff; border:1.5px dashed var(--line); border-radius:12px;
+    padding:52px 24px; text-align:center;
+  }
+  .placeholder-title{font-family:var(--disp); font-size:16px; font-weight:700; color:var(--ink); margin:0 0 6px;}
+  .placeholder-text{font-size:13px; color:var(--ink-soft); margin:0;}
+
+  /* ===== Backup bar ===== */
+  .backupbar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:#FBFDFC; border:1px solid var(--line); border-radius:10px;
+    padding:9px 14px; margin-bottom:14px;
+  }
+  .backupbar .bb-status{font-size:12px; color:var(--ink-soft); font-family:var(--mono);}
+  .backupbar .btn{font-size:12.5px; padding:7px 13px;}
+  .backupbar .btn-primary{background:var(--ink); }
+  .backupbar .btn-primary:hover{background:#000;}
+
+  .lh-title{
+    font-family:var(--disp); font-weight:600; font-size:15.5px; color:var(--accent-dark);
+    margin:10px 0 0; padding-top:10px; border-top:1px dashed var(--line);
+  }
+  .lh-sub{font-size:12px; color:var(--ink-soft); margin:2px 0 0;}
+  .panelhead{
+    background:#fff; border:1px solid var(--line); border-top:5px solid var(--accent);
+    border-radius:0 12px 12px 12px; padding:16px 26px 14px; margin-bottom:16px;
+  }
+
+  /* ===== Tolerance / global bar ===== */
+  .globalbar{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px 18px; margin-bottom:16px;
+  }
+  .globalbar .g-item{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft);}
+  .globalbar label{font-weight:600; color:var(--ink);}
+  .globalbar input[type=number]{
+    width:64px; font-family:var(--mono); font-size:13px; padding:5px 7px;
+    border:1px solid var(--line); border-radius:6px; background:#FBFDFC;
+  }
+  .spacer{flex:1;}
+  .btn{
+    font-family:var(--body); font-weight:600; font-size:13px; cursor:pointer;
+    border-radius:8px; padding:9px 16px; border:1px solid transparent; transition:.15s;
+  }
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-ghost{background:transparent; color:var(--ink-soft); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--ink-soft); color:var(--ink);}
+
+  /* ===== Background / record panel ===== */
+  details.bg{
+    background:#FBFCFB; border:1px solid var(--line-soft); border-left:4px solid var(--accent);
+    border-radius:10px; padding:2px 16px; margin-bottom:16px;
+  }
+  details.bg summary{
+    cursor:pointer; font-family:var(--disp); font-weight:700; font-size:13px; color:var(--accent-dark);
+    padding:12px 0; text-transform:uppercase; letter-spacing:.04em; list-style:none;
+  }
+  details.bg summary::-webkit-details-marker{display:none;}
+  details.bg summary:before{content:"▸ "; }
+  details.bg[open] summary:before{content:"▾ "; }
+  .bg-body{font-size:12.5px; color:var(--ink-soft); padding-bottom:14px; line-height:1.65;}
+  .bg-body h4{font-family:var(--disp); font-size:12px; color:var(--ink); margin:10px 0 4px; text-transform:uppercase; letter-spacing:.03em;}
+  .bg-body p{margin:4px 0;}
+  .bg-body .cite{font-family:var(--mono); font-size:11px; background:var(--line-soft); padding:1px 6px; border-radius:5px; color:var(--ink);}
+  table.reftable{width:100%; border-collapse:collapse; font-size:11px; margin-top:8px;}
+  table.reftable th,table.reftable td{border:1px solid var(--line); padding:4px 6px; text-align:center; font-family:var(--mono);}
+  table.reftable th{background:var(--line-soft); font-family:var(--body); font-weight:700; font-size:10px;}
+
+  /* ===== Setup panel ===== */
+  .setup{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px 14px; margin-bottom:16px;
+  }
+  .setup-title{font-family:var(--disp); font-size:13px; font-weight:700; color:var(--accent-dark);
+    text-transform:uppercase; letter-spacing:.05em; margin:0 0 12px;}
+  .setup-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px 14px;
+  }
+  .field{display:flex; flex-direction:column; gap:4px;}
+  .field label{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
+  .field label .unit{text-transform:none; letter-spacing:0;}
+  .field input, .field select{
+    font-family:var(--mono); font-size:13px; padding:7px 8px; border:1px solid var(--line);
+    border-radius:7px; background:#FBFDFC; color:var(--ink); width:100%;
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .field.readout input{background:var(--line-soft); font-weight:700; color:var(--ink);}
+  .field.readout label{color:var(--accent-dark);}
+
+  /* ===== Energy cards ===== */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:14px; margin-bottom:20px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px 16px; position:relative;
+  }
+  .card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .card-head .energy{font-family:var(--disp); font-size:17px; font-weight:700;}
+  .card-head .energy .meta{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink-soft); letter-spacing:0;}
+  .status-badge{
+    font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.04em;
+    padding:4px 10px; border-radius:999px; border:1px solid var(--line);
+    background:#F2F5F4; color:var(--ink-soft);
+  }
+  .status-badge.pass{background:var(--pass-bg); color:var(--pass-fg); border-color:var(--pass-line);}
+  .status-badge.fail{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+
+  .row-inline{display:flex; gap:10px; margin-bottom:10px;}
+  .row-inline .field{flex:1;}
+
+  .voltblocks{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;}
+  .voltblocks.two{grid-template-columns:1fr 1fr;}
+  .vb{background:#FAFCFB; border:1px solid var(--line-soft); border-radius:8px; padding:8px 9px;}
+  .vb-title{font-family:var(--mono); font-size:10px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; letter-spacing:.04em;}
+  .vb input{
+    width:100%; font-family:var(--mono); font-size:12px; padding:4px 5px; margin-bottom:4px;
+    border:1px solid var(--line); border-radius:5px; background:#fff;
+  }
+  .vb .avg{
+    display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px;
+    color:var(--ink-soft); margin-top:5px; padding-top:5px; border-top:1px dashed var(--line);
+  }
+  .vb .avg b{color:var(--ink); font-weight:700;}
+  .vb .kfac{
+    display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px;
+    color:var(--accent-dark); margin-top:3px; font-weight:700;
+  }
+
+  .result-strip{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:2px;}
+  .result-strip.two{grid-template-columns:repeat(2,1fr);}
+  .result-box{background:var(--line-soft); border-radius:8px; padding:8px 10px; text-align:center;}
+  .result-box .rl{font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:600;}
+  .result-box .rl .unit{text-transform:none; letter-spacing:0;}
+  .result-box .rv{font-family:var(--mono); font-size:15px; font-weight:700; margin-top:2px;}
+  .result-box.output .rv{color:var(--accent-dark);}
+  .result-box.var .rv.pass{color:var(--pass-fg);}
+  .result-box.var .rv.fail{color:var(--fail-fg);}
+
+  /* ===== Summary table ===== */
+  .summary{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:20px;}
+  .summary-title{font-family:var(--disp); font-size:13px; font-weight:700; color:var(--accent-dark);
+    text-transform:uppercase; letter-spacing:.05em; margin:0 0 3px;}
+  .summary-sub{font-size:11.5px; color:var(--ink-soft); font-style:italic; margin:0 0 10px;}
+  table.sum-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.sum-table th, table.sum-table td{border:1px solid var(--line); padding:7px 9px; text-align:center; font-family:var(--mono);}
+  table.sum-table th{background:var(--line-soft); font-family:var(--body); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);}
+  table.sum-table th .unit{text-transform:none; letter-spacing:0;}
+  table.sum-table td.energycol{font-family:var(--disp); font-weight:700; font-size:13px; text-align:left;}
+  table.sum-table td.pass{color:var(--pass-fg); font-weight:700;}
+  table.sum-table td.fail{color:var(--fail-fg); font-weight:700;}
+
+  /* ===== Sign-off ===== */
+  .signoff{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:18px 20px 26px; display:grid; grid-template-columns:repeat(3,1fr); gap:22px 16px;
+  }
+  .signoff .field label{color:var(--ink-soft);}
+  .signoff .field input{background:#FBFDFC; border:none; border-bottom:1px solid var(--line); border-radius:0; padding:7px 2px;}
+  .signoff .field .sig-input{margin-top:10px; font-family:cursive; font-size:15px;}
+  .signoff .field .sig-label{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-top:2px; display:block;}
+
+  .legend{font-size:11.5px; color:var(--ink-soft); margin:14px 2px 22px; display:flex; gap:18px; flex-wrap:wrap;}
+  .legend b{color:var(--ink);}
+
+  footer.note{font-size:11px; color:var(--ink-soft); text-align:center; margin-top:22px; line-height:1.7;}
+  footer.note .refs{font-family:var(--mono); font-size:10.5px; color:#7C8C8A; margin-top:8px; display:block;}
+
+  /* ===== Print ===== */
+  @media print{
+    @page{ size:A4 portrait; margin:12mm 12mm 12mm 25mm; }
+
+    html,body{background:#fff;}
+    body{padding:0; margin:0; background:#fff; font-size:10.5pt; line-height:1.15;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .wrap{max-width:100%; margin:0;}
+
+    .tabbar, .globalbar .btn, .no-print{display:none !important;}
+    /* Only the currently open tab prints — not all sections */
+    .panel{display:none !important;}
+    .panel.active{display:block !important;}
+    .panel-standalone{display:block !important;}
+    .mainview{display:none !important;}
+    .mainview.active{display:block !important;}
+    .subpanel{display:none !important;}
+    .subpanel.active{display:block !important;}
+
+    /* Reference/background notes are for on-screen use only — skip them on the printed record to save paper */
+    details.bg{display:none !important;}
+
+    /* ===== Letterhead (main title block) ===== */
+    .letterhead{padding:5px 12px; margin-bottom:5px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .lh-inst{font-size:17pt; line-height:1.15;}
+    .lh-dept{font-size:10.5pt; margin-top:2px;}
+    .lh-master{font-size:9.5pt; margin-top:3px;}
+    .lh-master .tag{font-size:8.5pt; padding:1px 7px;}
+    /* Each tab prints its own title only — the shared multi-section master line is on-screen only */
+    .lh-master{display:none !important;}
+
+    /* ===== Panel head (major section heading) ===== */
+    .panelhead{
+      border-top-color:var(--accent) !important;
+      padding:6px 14px 5px; margin-bottom:5px; border-radius:0 5px 5px 5px;
+      break-inside:avoid; page-break-inside:avoid;
+    }
+    .lh-title{font-size:14pt; margin-top:0; padding-top:0; border-top:none; font-weight:700; line-height:1.15;}
+    .lh-sub{font-size:9.5pt;}
+    .panelhead .lh-docbox{margin-top:5px !important;}
+    .lh-docbox{font-size:9pt; gap:2px 8px;}
+    .lh-docbox input{font-size:9pt; padding:1px 6px;}
+
+    /* ===== Measurement setup block (sub-heading) ===== */
+    .setup{padding:6px 14px 5px; margin-bottom:5px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .setup-title{font-size:12pt; margin-bottom:5px;}
+    .setup-grid{grid-template-columns:repeat(4,1fr); gap:4px 8px;}
+    .field{gap:2px;}
+    .field label{font-size:9.5pt; letter-spacing:.03em; line-height:1.1;}
+    .field input, .field select{font-size:10.5pt; padding:2px 6px; font-weight:600; line-height:1.15;}
+
+    /* ===== Energy cards — two per row so each card stays wide and legible ===== */
+    .cards{
+      grid-template-columns:repeat(2,1fr) !important; gap:6px; margin-bottom:5px;
+    }
+    .card{padding:6px 8px 7px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .card-head{margin-bottom:5px;}
+    .card-head .energy{font-size:11.5pt; font-weight:700;}
+    .card-head .energy .meta{font-size:9.5pt;}
+    .status-badge{font-size:9.5pt; padding:2px 9px;}
+
+    /* ===== Mechanical QA cards — tightened for print so the 12-section
+       record fits in fewer pages instead of leaving a near-empty last page ===== */
+    .mech-card{padding:5px 8px 6px; margin-bottom:4px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .mech-card h3{font-size:10.5pt; margin:0 0 1px;}
+    .mech-card .refline{font-size:8pt; margin:0 0 4px; line-height:1.2;}
+    .mech-card table{font-size:9pt;}
+    .mech-card th{font-size:7.5pt; padding:3px 5px;}
+    .mech-card td{padding:2px 5px; line-height:1.2;}
+    .mech-card input[type=number], .mech-card input[type=text]{font-size:9pt; padding:1px 4px; width:56px;}
+    .mech-card input.wide{width:100px;}
+    .mech-footerbox{padding:6px 12px; gap:12px;}
+    .mech-footerbox input{width:180px; font-size:9pt;}
+    .mech-footerbox label{font-size:9pt;}
+
+    /* MLC setup-row fields (film type, angle lists, field-size text, etc.) need
+       more than the default 56px number/text input width or they truncate */
+    .mech-card .setuprow{gap:5px 14px; margin:0 0 6px;}
+    .mech-card .setuprow input{width:150px !important; font-size:8pt;}
+    .mech-card .setuprow label{font-size:8.5pt;}
+    .mech-card .regbox{padding:5px 8px; gap:10px; font-size:9pt; margin-top:5px;}
+    .mech-card .mlc-note{font-size:8pt; margin:3px 0 5px;}
+    .mlc-src{font-size:7.5pt; padding:0 5px;}
+
+    .row-inline{gap:5px; margin-bottom:5px; flex-wrap:wrap;}
+    .row-inline .field{min-width:0;}
+    .row-inline .field label{font-size:9.5pt;}
+    .row-inline .field input{font-size:10.5pt; font-weight:700;}
+
+    .voltblocks{gap:4px; margin-bottom:5px;}
+    .vb{padding:4px 5px; border-radius:5px;}
+    .vb-title{font-size:9pt; margin-bottom:2px; font-weight:700;}
+    .vb input{font-size:10pt; padding:1px 3px; margin-bottom:1px; font-weight:600; line-height:1.15;}
+    .vb .avg, .vb .kfac{font-size:9.5pt; margin-top:2px; padding-top:2px;}
+    .vb .avg b{font-size:10pt;}
+
+    .result-strip{gap:5px;}
+    .result-box{padding:4px 5px; border-radius:5px;}
+    .result-box .rl{font-size:9pt;}
+    .result-box .rv{font-size:11pt; font-weight:700; margin-top:1px;}
+
+    /* ===== Summary + sign-off — flow naturally after the cards; kept as one
+       connected unit (break-inside:avoid) so it isn't split awkwardly, but no
+       forced page break, so it fills whatever room remains instead of leaving
+       a mostly-empty page ===== */
+    .summary{padding:6px 12px; margin-bottom:5px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .summary-title{font-size:12pt; margin-bottom:1px;}
+    .summary-sub{font-size:9pt; margin-bottom:5px;}
+    table.sum-table{font-size:10pt;}
+    table.sum-table th, table.sum-table td{padding:3px 6px; line-height:1.2;}
+    table.sum-table th{font-size:9.5pt;}
+    table.sum-table td.energycol{font-size:10.5pt;}
+    table.sum-table tr{break-inside:avoid; page-break-inside:avoid;}
+
+    .legend{font-size:9pt; margin:5px 2px 6px; line-height:1.3;}
+
+    .signoff{padding:6px 12px 8px; gap:8px 12px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
+    .signoff .field label{font-size:9.5pt;}
+    .signoff .field input{font-size:10.5pt; padding:4px 2px;}
+    .signoff .field .sig-label{font-size:8pt; margin-top:4px;}
+    .signoff .field .sig-input{font-size:11pt; margin-top:2px;}
+
+    footer.note{margin-top:5px; font-size:9pt; line-height:1.35; break-inside:avoid;}
+    footer.note .refs{font-size:8.5pt;}
+
+    .status-badge.pass, .status-badge.fail, table.sum-table td.pass, table.sum-table td.fail,
+    .letterhead, .panelhead, .setup, .card, .mech-card, .vb, .result-box, .summary, .signoff, table.sum-table th{
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+
+    /* Avoid an orphaned heading with nothing below it at the bottom of a page */
+    .setup-title, .summary-title, .lh-title{break-after:avoid; page-break-after:avoid;}
+
+    /* ===== QA Evidence galleries — print in place, right below their test ===== */
+    .eg-wrap{break-inside:avoid; page-break-inside:avoid; margin-top:6px; padding-top:5px;}
+    .eg-wrap.eg-empty-state{display:none;}
+    .eg-head{margin-bottom:4px;}
+    .eg-title{font-size:9pt;}
+    .eg-addbtn{display:none;}
+    .eg-strip{gap:6px;}
+    .eg-thumb{width:150px; break-inside:avoid; page-break-inside:avoid;}
+    .eg-thumb img{width:150px; height:auto; max-height:210px;}
+    .eg-thumb-actions{display:none;}
+    .eg-caption{border:none !important; background:transparent !important; font-size:8pt !important; padding:1px 0 !important; color:var(--ink-soft) !important;}
+    .eg-viewer{display:none !important;}
+  }
+  @media (max-width:640px){
+    .voltblocks{grid-template-columns:1fr;}
+    .row-inline{flex-direction:column;}
+    .lh-top{flex-direction:column;}
+    .lh-docbox{text-align:left;}
+    .signoff{grid-template-columns:1fr;}
+  }
+
+</style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="letterhead">
+    <div class="lh-top">
+      <div>
+        <p class="lh-inst">Postgraduate Institute of Medical Education &amp; Research (PGIMER), Chandigarh</p>
+        <p class="lh-dept">Department of Radiotherapy and Oncology &middot; Medical Physics Section</p>
+        <p class="lh-master">Monthly Photon &amp; Electron Output Constancy, Photon Beam Quality (TPR<sub>20,10</sub>) &amp; Mechanical QA &mdash; TrueBeam SVC</p>
+      </div>
+    </div>
+  </div>
+
+    <div class="tabbar maintabbar no-print">
+    <button class="tabbtn maintabbtn" data-maintab="daily">Daily QA</button>
+    <button class="tabbtn maintabbtn active" data-maintab="monthly">Monthly QA</button>
+    <button class="tabbtn maintabbtn" data-maintab="annual">Annual QA</button>
+  </div>
+
+
+  <div class="backupbar no-print">
+    <div class="bb-status" id="bb-status">No backup loaded this session</div>
+    <div class="spacer"></div>
+    <select class="btn btn-ghost" id="bb-historySel" style="max-width:220px;">
+      <option value="">🕘 Local history…</option>
+    </select>
+    <button class="btn btn-ghost" id="bb-restoreBtn">📂 Restore backup</button>
+    <input type="file" id="bb-fileInput" accept="application/json,.json" style="display:none;">
+    <button class="btn btn-ghost" id="bb-saveBtn">💾 Save backup (.json)</button>
+    <button class="btn btn-primary" id="bb-shareBtn">📤 Share (Android)</button>
+  </div>
+
+  <div class="backupbar no-print">
+    <div class="bb-status" id="bb-drive-status">☁️ Drive: not connected</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="bb-driveSettingsBtn">⚙️ Drive setup</button>
+    <button class="btn btn-primary" id="bb-driveConnectBtn">🔗 Connect Google Drive</button>
+    <button class="btn btn-ghost" id="bb-driveSnapshotBtn" disabled>☁️ Save dated snapshot to Drive</button>
+  </div>
+
+  
+
+<div class="mainview" id="view-daily" data-mainview="daily">
+  <div class="placeholder-box">
+    <p class="placeholder-title">Daily QA</p>
+    <p class="placeholder-text">Daily QA modules will be added here.</p>
+  </div>
+</div>
+
+<div class="mainview active" id="view-monthly" data-mainview="monthly">
+
+  <div class="tabbar subtabbar no-print">
+    <button class="tabbtn subtabbtn active" data-subtab="mech">Mechanical</button>
+    <button class="tabbtn subtabbtn" data-subtab="output">Absolute Output</button>
+    <button class="tabbtn subtabbtn" data-subtab="imaging">Imaging</button>
+    <button class="tabbtn subtabbtn" data-subtab="mlc">MLC</button>
+  </div>
+
+  <div class="subpanel active" id="sub-mech" data-subpanel="mech">
+<div class="panel-standalone" id="panel-mech" data-panel="mech">
+  <div class="panelhead sec-mech">
+    <p class="lh-title">Monthly Mechanical Quality Assurance</p>
+    <p class="lh-sub">Reference: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM Task Group 142 Report</p>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>LINAC Name</label><input type="text" id="mech-linacname" value="TrueBeam SVC">
+      <label>Make/Model</label><input type="text" id="mech-makemodel" value="Varian TrueBeam (SVC)">
+      <label>Report No.</label><input type="text" id="mech-docId" placeholder="MPQA-MECH-##">
+      <label>Date</label><input type="text" id="mech-date" value="08-07-2026">
+      <label>Month/Year</label><input type="text" id="mech-monthyear" value="AUGUST, 2026">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-mech">
+    <div class="g-item">Reference: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM TG-142 (individual tolerances per parameter, shown per table)</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="mech-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-mech" id="mech-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="mech-card">
+    <h3>1. Mechanical/Radiation Isocenter (Isocentric Wobble) — Star-shot / Graph Paper</h3>
+    <p class="refline">TG-142 Annual: ≤ 1 mm from baseline · AERB action tolerance: ≤ 2 mm dia · tracked monthly per departmental protocol</p>
+    <table>
+      <tr><th>Parameter</th><th>Measured (mm dia.)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Collimator Rotation Isocenter</td><td><input type="number" step="0.1" id="s1-coll" value="1" data-tol="2"></td><td class="tolcell">≤ 2 mm dia</td><td id="s1-coll-pf"></td></tr>
+      <tr><td>Gantry Rotation Isocenter</td><td><input type="number" step="0.1" id="s1-gantry" value="1" data-tol="2"></td><td class="tolcell">≤ 2 mm dia</td><td id="s1-gantry-pf"></td></tr>
+      <tr><td>Couch Rotation Isocenter</td><td><input type="number" step="0.1" id="s1-couch" value="1" data-tol="2"></td><td class="tolcell">≤ 2 mm dia</td><td id="s1-couch-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-1" data-eg-label="Mechanical/Radiation Isocenter (Isocentric Wobble) — Star-shot / Graph Paper"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>2. Cross-hair Centering / Walkout — Graph Paper</h3>
+    <p class="refline">TG-142 Monthly: ≤ 1 mm</p>
+    <table>
+      <tr><th>Parameter</th><th>Measured (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Radial (In-line) cross-hair parallelism</td><td><input type="number" step="0.1" id="s2-radial" value="0" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s2-radial-pf"></td></tr>
+      <tr><td>Transverse (Cross-line) cross-hair parallelism</td><td><input type="number" step="0.1" id="s2-trans" value="0" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s2-trans-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-2" data-eg-label="Cross-hair Centering / Walkout — Graph Paper"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>3. Localizing Laser Alignment</h3>
+    <p class="refline">TG-142 Monthly: ≤ 2 mm (Non-IMRT) · ≤ 1 mm (IMRT/SRS-SBRT)</p>
+    <table>
+      <tr><th>Laser</th><th>Line</th><th>Measured (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Sagittal</td><td>Vertical</td><td><input type="number" step="0.1" id="s3-sag-v" value="0" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s3-sag-v-pf"></td></tr>
+      <tr><td>Left Lateral</td><td>Vertical</td><td><input type="number" step="0.1" id="s3-ll-v" value="0" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s3-ll-v-pf"></td></tr>
+      <tr><td>Left Lateral</td><td>Horizontal</td><td><input type="number" step="0.1" id="s3-ll-h" value="1.2" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s3-ll-h-pf"></td></tr>
+      <tr><td>Right Lateral</td><td>Vertical</td><td><input type="number" step="0.1" id="s3-rl-v" value="0.2" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s3-rl-v-pf"></td></tr>
+      <tr><td>Right Lateral</td><td>Horizontal</td><td><input type="number" step="0.1" id="s3-rl-h" value="1.2" data-tol="1"></td><td class="tolcell">≤ 1 mm</td><td id="s3-rl-h-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-3" data-eg-label="Localizing Laser Alignment"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>4. Optical Distance Indicator (ODI) Verification</h3>
+    <p class="refline">TG-142 Monthly: ≤ 1 mm · AERB action tolerance: ± 2 mm</p>
+    <table>
+      <tr><th>Couch Position (MDI)</th><th>Couch Vertical w/ MDI</th><th>Couch Vertical w/ ODI</th><th>Variation (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="s4-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-4" data-eg-label="Optical Distance Indicator (ODI) Verification"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>5. Light / Radiation Field — Symmetric Jaws</h3>
+    <p class="refline">TG-142 Monthly: ≤ 2 mm or 1% on a side · Tolerance: ± 1 mm for FS ≤ 10×10 cm²; ± 1% (not exceeding 2 mm) of FS for FS &gt; 10×10 cm²</p>
+    <table>
+      <tr><th>Field Size</th><th>X1</th><th>X2</th><th>X (sum)</th><th>Y1</th><th>Y2</th><th>Y (sum)</th><th>ΔX</th><th>ΔY</th><th>Pass/Fail</th></tr>
+      <tbody id="s5-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-5" data-eg-label="Light / Radiation Field — Symmetric Jaws"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>6. Light / Radiation Field — Asymmetric Jaws</h3>
+    <p class="refline">TG-142 Monthly: ≤ 1 mm or 1% on a side · Tolerance: ± 1 mm for FS ≤ 10×10 cm²; ± 1% (not exceeding 2 mm) of FS for FS &gt; 10×10 cm²</p>
+    <table>
+      <tr><th>X1 &amp; Y1</th><th>X2 &amp; Y2</th><th colspan="2">Measured X</th><th colspan="2">Measured Y</th><th colspan="4">Variation</th><th>Pass/Fail</th></tr>
+      <tr><th></th><th></th><th>X1</th><th>X2</th><th>Y1</th><th>Y2</th><th>X1</th><th>X2</th><th>Y1</th><th>Y2</th><th></th></tr>
+      <tbody id="s6-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-6" data-eg-label="Light / Radiation Field — Asymmetric Jaws"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>7. Jaw Position Indicator Accuracy</h3>
+    <p class="refline">TG-142 Monthly — Symmetric: ≤ 2 mm; Asymmetric: ≤ 1 mm (checked at 0.0 cm and 10.0 cm)</p>
+    <table>
+      <tr><th>Jaw</th><th>Setting (cm)</th><th>Measured at 0.0 cm</th><th>Measured at 10.0 cm</th><th>Pass/Fail</th></tr>
+      <tbody id="s7-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-7" data-eg-label="Jaw Position Indicator Accuracy"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>8. Collimator Angle Indicator — Cardinal Angles</h3>
+    <p class="refline">Digital Readout vs Magnetic Spirit Level · TG-142 Monthly: ≤ 1.0°</p>
+    <table>
+      <tr><th>Set Angle (°)</th><th>Observed (°)</th><th>Variation (°)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="s8-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-8" data-eg-label="Collimator Angle Indicator — Cardinal Angles"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>9. Gantry Angle Indicator — Cardinal Angles</h3>
+    <p class="refline">Digital Readout vs Magnetic Spirit Level · TG-142 Monthly: ≤ 1.0°</p>
+    <table>
+      <tr><th>Set Angle (°)</th><th>Observed (°)</th><th>Variation (°)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="s9-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-9" data-eg-label="Gantry Angle Indicator — Cardinal Angles"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>10. Treatment Couch Position Indicators</h3>
+    <p class="refline">TG-142 Monthly: ≤ 2 mm (translational) / ≤ 1° (rotational)</p>
+    <table>
+      <tr><th>Parameter</th><th>Measured</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Lateral position indicator</td><td><input type="number" step="0.1" id="s10-lat" value="0" data-tol="2"></td><td class="tolcell">≤ 2 mm</td><td id="s10-lat-pf"></td></tr>
+      <tr><td>Longitudinal position indicator</td><td><input type="number" step="0.1" id="s10-long" value="0" data-tol="2"></td><td class="tolcell">≤ 2 mm</td><td id="s10-long-pf"></td></tr>
+      <tr><td>Vertical (height) position indicator</td><td><input type="number" step="0.1" id="s10-vert" value="0" data-tol="2"></td><td class="tolcell">≤ 2 mm</td><td id="s10-vert-pf"></td></tr>
+      <tr><td>Couch rotation (isocentric) indicator</td><td><input type="number" step="0.1" id="s10-rot" value="0" data-tol="1"></td><td class="tolcell">≤ 1°</td><td id="s10-rot-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-10" data-eg-label="Treatment Couch Position Indicators"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>11. Couch Angle Indicator</h3>
+    <p class="refline">Graph Paper / Protractor · AERB / TG-142 Monthly: ≤ 1.0°</p>
+    <table>
+      <tr><th>Set Couch Angle (°)</th><th>Observed (°)</th><th>Variation (°)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="s11-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-11" data-eg-label="Couch Angle Indicator"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>12. Accessory Tray / Wedge Placement Accuracy</h3>
+    <p class="refline">TG-142 Monthly: ≤ 2 mm (tray/wedge); ≤ 1 mm (compensator tray)</p>
+    <table>
+      <tr><th>Parameter</th><th>Measured</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Accessory tray (e.g., port film/graticule tray) position</td><td><input type="number" step="0.1" id="s12-tray" value="0" data-tol="2"></td><td class="tolcell">≤ 2 mm</td><td id="s12-tray-pf"></td></tr>
+      <tr><td>Physical wedge placement accuracy</td><td><input type="number" step="0.1" id="s12-wedge" value="0" data-tol="2"></td><td class="tolcell">≤ 2 mm</td><td id="s12-wedge-pf"></td></tr>
+      <tr><td>Latching of wedge / blocking tray (interlock)</td><td><input type="text" id="s12-latch" value="Functional" class="wide"></td><td class="tolcell">Functional</td><td id="s12-latch-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mech-12" data-eg-label="Accessory Tray / Wedge Placement Accuracy"></div>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Performed by</label><input type="text" id="mech-signoff-performed">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mech-signoff-performed-sig"></div>
+    <div class="field"><label>Checked by</label><input type="text" id="mech-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mech-signoff-checked-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="mech-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mech-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Mechanical/geometric QA per AAPM TG-142 and AERB Safety Code AERB/RF-MED/SC-3. Monthly tolerances are as
+    listed against each parameter above; overall record passes only if all individual items are within tolerance.
+    <span class="refs">Ref: AAPM TG-142 &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+
+  </div>
+
+  <div class="subpanel" id="sub-output" data-subpanel="output">
+  <div class="tabbar outputsubtabbar no-print">
+    <button class="tabbtn active" data-tab="ph"><span class="dot"></span>Photon</button>
+    <button class="tabbtn" data-tab="el"><span class="dot"></span>Electron</button>
+    <button class="tabbtn" data-tab="tpr"><span class="dot"></span>TPR<sub>20,10</sub></button>
+  </div>
+<div class="panel active" id="panel-ph" data-panel="ph">
+  <div class="panelhead sec-ph">
+    <p class="lh-title">Monthly Absolute Output Verification &mdash; Photon Beams</p>
+    <p class="lh-sub">TrueBeam Linear Accelerator &mdash; SVC Site &middot; Absolute dosimetry per IAEA TRS-398 formalism</p>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>QA Date</label><input type="date" id="ph-qaDate">
+      <label>Report No.</label><input type="text" id="ph-docId" placeholder="MPQA-PH-##">
+      <label>Machine</label><input type="text" id="ph-machineId" value="TrueBeam (SVC)">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-ph">
+    <div class="g-item"><label>Tolerance &plusmn;</label><input type="number" id="ph-tolerance" value="2" step="0.1"><span>%</span></div>
+    <div class="g-item">Reference conditions: T&#8320; = 20 &deg;C, P&#8320; = 1013.25 mbar</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="ph-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-ph" id="ph-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="sec-ph">
+  
+  <details class="bg">
+    <summary>Background &amp; Formalism — Record Reference</summary>
+    <div class="bg-body">
+      <h4>Purpose</h4>
+      <p>Monthly constancy check of the absolute photon dose output of the accelerator against the calibrated
+      baseline established at commissioning, expressed in cGy/MU, per AERB QA schedule and AAPM TG-142.</p>
+      <h4>Formalism (IAEA TRS-398, Section 6.4)</h4>
+      <p>Absorbed dose to water at the reference depth: <span class="cite">D<sub>w,Q</sub> = M<sub>Q</sub> &middot; N<sub>D,w,Qo</sub> &middot; k<sub>Q,Qo</sub></span>,
+      where M<sub>Q</sub> is the fully corrected chamber reading (temperature&ndash;pressure, polarity and ion-recombination
+      corrected), N<sub>D,w,Qo</sub> is the chamber's calibration factor in terms of absorbed dose to water at the
+      reference quality Q<sub>o</sub> (subscript Q<sub>o</sub> omitted here as calibration is referenced to <sup>60</sup>Co),
+      and k<sub>Q,Qo</sub> is the beam-quality correction factor for the actual beam quality Q, obtained from the
+      TPR<sub>20,10</sub> tab or the chamber's calibration certificate.</p>
+      <h4>Correction factors used</h4>
+      <p><b>k<sub>pol</sub></b> corrects for polarity effect: k<sub>pol</sub> = (|M<sub>+</sub>| + |M<sub>&minus;</sub>|) / (2M),
+      M being the reading at the routine (normal, V1) polarity. <b>k<sub>s</sub></b> (ion recombination / saturation
+      correction, two-voltage method, TRS-398 Eq. 14) corrects for incomplete charge collection: k<sub>s</sub> = a<sub>0</sub>
+      + a<sub>1</sub>(M<sub>1</sub>/M<sub>2</sub>) + a<sub>2</sub>(M<sub>1</sub>/M<sub>2</sub>)&sup2;, with a<sub>0</sub>,a<sub>1</sub>,a<sub>2</sub>
+      taken from TRS-398 Table 9 at the polarizing-voltage ratio V<sub>1</sub>/V<sub>2</sub> entered in the setup panel &mdash;
+      any voltage pair may be typed (e.g. 300/150, 400/100); a ratio between the table's grid points (2.0, 2.5, 3.0, 3.5,
+      4.0, 5.0) is linearly interpolated, and a ratio outside 2.0&ndash;5.0 is flagged and clamped to the nearest tabulated
+      value. <b>k<sub>TP</sub></b> corrects chamber response to reference temperature/pressure
+      (T<sub>0</sub>&nbsp;=&nbsp;20&nbsp;&deg;C, P<sub>0</sub>&nbsp;=&nbsp;1013.25&nbsp;mbar).</p>
+      <h4>Tolerance</h4>
+      <p>&plusmn;2% of baseline output (AERB Safety Code / AAPM TG-142 monthly action level), unless a tighter
+      departmental tolerance is specified.</p>
+      <h4>Record-keeping note</h4>
+      <p>This sheet is the controlled record of the measurement and calculation for the stated QA date. Retain a
+      signed copy (electronic or printed) per institutional QA document-retention policy.</p>
+    </div>
+  </details>
+
+  </div>
+
+  <div class="setup">
+    <p class="setup-title" style="color:var(--accent-dark)">Measurement Setup</p>
+    <div class="setup-grid sec-ph">
+      <div class="field"><label>SSD (<span class="unit">cm</span>)</label><input type="text" id="ph-mod-ssd" value="100"></div>
+      <div class="field"><label>MU delivered</label><input type="number" id="ph-mod-mu" value="100"></div>
+      <div class="field"><label>Field size</label><input type="text" id="ph-mod-fs" value="10×10 cm²"></div>
+      <div class="field"><label>Depth</label><input type="text" id="ph-mod-depth" value="10 cm"></div>
+      <div class="field"><label>Phantom</label><input type="text" id="ph-mod-phantom" value="1D Water Phantom"></div>
+      <div class="field"><label>Chamber</label><input type="text" id="ph-mod-chamber" value="FC65-G, IBA 4201"></div>
+      <div class="field"><label>Electrometer</label><input type="text" id="ph-mod-electrometer" value="DOSE-1"></div>
+      <div class="field"><label>V<sub>1</sub> normal bias (<span class="unit">V</span>)</label><input type="number" id="ph-mod-v1" value="300" step="1"></div>
+      <div class="field"><label>V<sub>2</sub> reduced bias, for k<sub>s</sub> (<span class="unit">V</span>)</label><input type="number" id="ph-mod-v2" value="150" step="1"></div>
+      <div class="field readout"><label>V<sub>1</sub>/V<sub>2</sub> (auto)</label><input type="text" id="ph-mod-vratio" readonly></div>
+      <div class="field"><label>Beam type (Table 9)</label>
+        <select id="ph-mod-beamtype">
+          <option value="pulsed" selected>Pulsed</option>
+          <option value="scanned">Pulsed&ndash;scanned</option>
+        </select>
+      </div>
+      <div class="field"><label>Meter reading unit</label>
+        <select id="ph-mod-readingunit">
+          <option value="nC" selected>nC (charge)</option>
+          <option value="rdg">rdg (raw display units)</option>
+        </select>
+      </div>
+      <div class="field"><label>k<sub>elec</sub> (<span class="unit">nC</span>/rdg, if rdg)</label><input type="number" id="ph-mod-kelec" value="1" step="0.0001"></div>
+      <div class="field"><label>N<sub>D,w</sub> mantissa</label><input type="number" id="ph-mod-ndw-mant" value="4.825" step="0.0001"></div>
+      <div class="field"><label>&times;10^ (exponent)</label><input type="number" id="ph-mod-ndw-exp" value="0" step="1"></div>
+      <div class="field"><label>N<sub>D,w</sub> unit</label>
+        <select id="ph-mod-ndw-unit">
+          <option value="cGynC" selected>cGy/nC</option>
+          <option value="GynC">Gy/nC</option>
+          <option value="GyC">Gy/C</option>
+          <option value="cGyC">cGy/C</option>
+        </select>
+      </div>
+      <div class="field readout"><label>N<sub>D,w</sub> (auto, <span class="unit">cGy/nC</span>)</label><input type="text" id="ph-mod-ndw" readonly></div>
+      <div class="field"><label>T measured (<span class="unit">&deg;C</span>)</label><input type="number" id="ph-mod-t" value="20" step="0.1"></div>
+      <div class="field"><label>P measured (<span class="unit">mbar</span>)</label><input type="number" id="ph-mod-p" value="1013.25" step="0.01"></div>
+      <div class="field readout"><label>k<sub>TP</sub> (auto)</label><input type="text" id="ph-mod-ktp" readonly></div>
+    </div>
+  </div>
+
+  <div class="cards sec-ph" id="ph-mod-cards"></div>
+
+  <div class="summary sec-ph">
+    <p class="summary-title">Summary &mdash; Absolute Dose Determination (Photon Beams)</p>
+    <p class="summary-sub">Determination of the absorbed dose to water in a high-energy photon beam &mdash; IAEA TRS-398</p>
+    <table class="sum-table" id="ph-summary-table">
+      <thead>
+        <tr>
+          <th>Energy</th><th>k<sub>Q,Qo</sub></th><th>PDD/TPR (%)</th><th>M<sub>avg</sub> (<span class="unit">nC</span>)</th>
+          <th>k<sub>pol</sub></th><th>k<sub>s</sub></th><th>k<sub>TP</sub></th>
+          <th>Output (<span class="unit">cGy/MU</span>)</th><th>Baseline</th><th>% Variation</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><b>k<sub>pol</sub></b> = (|M<sub>+V1</sub>| + |M<sub>&minus;V1</sub>|) / (2&middot;M<sub>+V1</sub>)</span>
+    <span><b>k<sub>s</sub></b> = a<sub>0</sub> + a<sub>1</sub>&middot;(M<sub>V1</sub>/M<sub>V2</sub>) + a<sub>2</sub>&middot;(M<sub>V1</sub>/M<sub>V2</sub>)&sup2; &nbsp;(TRS-398 Table 9 coefficients, looked up / interpolated at the typed V1/V2)</span>
+    <span><b>k<sub>TP</sub></b> = (P&#8320;/P)&middot;[(273.2+T)/(273.2+T&#8320;)]</span>
+    <span><b>Output</b> = (M<sub>avg,+V1</sub> &middot; N<sub>D,w</sub> &middot; k<sub>pol</sub> &middot; k<sub>s</sub> &middot; k<sub>Q,Qo</sub> &middot; k<sub>TP</sub>) / PDD(%)</span>
+    <span>Readings may be typed in nC or in raw electrometer units (rdg); rdg is converted to nC via M[nC] = M[rdg]&middot;k<sub>elec</sub></span>
+    <span>N<sub>D,w</sub> is typed as mantissa &times; 10^exponent in Gy/C, Gy/nC, cGy/nC or cGy/C, and auto-converted to cGy/nC for the Output formula</span>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Performed by</label><input type="text" id="ph-signoff-performed">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="ph-signoff-performed-sig"></div>
+    <div class="field"><label>Checked by</label><input type="text" id="ph-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="ph-signoff-checked-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="ph-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="ph-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Formalism per IAEA TRS-398 (Absorbed Dose Determination in External Beam Radiotherapy). Monthly output constancy
+    tolerance per TG-142 / AERB is &plusmn;2% of baseline unless otherwise specified by department protocol.
+    <span class="refs">Ref: IAEA TRS-398 (2000/2006 update), Secs 6.4 &amp; 7.4 &middot; AAPM TG-142 &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+
+  
+<div class="panel" id="panel-el" data-panel="el">
+  <div class="panelhead sec-el">
+    <p class="lh-title">Monthly Absolute Output Verification &mdash; Electron Beams</p>
+    <p class="lh-sub">TrueBeam Linear Accelerator &mdash; SVC Site &middot; Absolute dosimetry per IAEA TRS-398 formalism</p>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>QA Date</label><input type="date" id="el-qaDate">
+      <label>Report No.</label><input type="text" id="el-docId" placeholder="MPQA-EL-##">
+      <label>Machine</label><input type="text" id="el-machineId" value="TrueBeam (SVC)">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-el">
+    <div class="g-item"><label>Tolerance &plusmn;</label><input type="number" id="el-tolerance" value="2" step="0.1"><span>%</span></div>
+    <div class="g-item">Reference conditions: T&#8320; = 20 &deg;C, P&#8320; = 1013.25 mbar</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="el-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-el" id="el-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="sec-el">
+  
+  <details class="bg">
+    <summary>Background &amp; Formalism — Record Reference</summary>
+    <div class="bg-body">
+      <h4>Purpose</h4>
+      <p>Monthly constancy check of the absolute electron dose output of the accelerator against the calibrated
+      baseline established at commissioning, expressed in cGy/MU, per AERB QA schedule and AAPM TG-142.</p>
+      <h4>Formalism (IAEA TRS-398, Section 7.4)</h4>
+      <p>Absorbed dose to water: <span class="cite">D<sub>w,Q</sub> = M<sub>Q</sub> &middot; N<sub>D,w,Qo</sub> &middot; k<sub>Q,Qo</sub></span>,
+      with the chamber reference point positioned at the reference depth z<sub>ref</sub> in water. TRS-398 specifies the
+      electron beam-quality index as R<sub>50</sub> (half-value depth, g/cm&sup2;), with z<sub>ref</sub> = 0.6&middot;R<sub>50</sub>
+      &minus; 0.1 g/cm&sup2;. Where departmental protocol measures at a fixed reference depth and normalises via a
+      percentage depth-dose factor instead, that is recorded in the "PDD/TPR (%)" field per energy.</p>
+      <h4>Correction factors used</h4>
+      <p><b>k<sub>pol</sub></b> corrects for polarity effect: k<sub>pol</sub> = (|M<sub>+</sub>| + |M<sub>&minus;</sub>|) / (2M),
+      M being the reading at the routine (normal, V1) polarity. <b>k<sub>s</sub></b> (ion recombination / saturation
+      correction, two-voltage method, TRS-398 Eq. 14) corrects for incomplete charge collection: k<sub>s</sub> = a<sub>0</sub>
+      + a<sub>1</sub>(M<sub>1</sub>/M<sub>2</sub>) + a<sub>2</sub>(M<sub>1</sub>/M<sub>2</sub>)&sup2;, with a<sub>0</sub>,a<sub>1</sub>,a<sub>2</sub>
+      taken from TRS-398 Table 9 at the polarizing-voltage ratio V<sub>1</sub>/V<sub>2</sub> entered in the setup panel &mdash;
+      any voltage pair may be typed (e.g. 300/150, 400/100); a ratio between the table's grid points (2.0, 2.5, 3.0, 3.5,
+      4.0, 5.0) is linearly interpolated, and a ratio outside 2.0&ndash;5.0 is flagged and clamped to the nearest tabulated
+      value. <b>k<sub>TP</sub></b> corrects chamber response to reference temperature/pressure
+      (T<sub>0</sub>&nbsp;=&nbsp;20&nbsp;&deg;C, P<sub>0</sub>&nbsp;=&nbsp;1013.25&nbsp;mbar).</p>
+      <h4>Tolerance</h4>
+      <p>&plusmn;2% of baseline output (AERB Safety Code / AAPM TG-142 monthly action level), unless a tighter
+      departmental tolerance is specified.</p>
+      <h4>Record-keeping note</h4>
+      <p>This sheet is the controlled record of the measurement and calculation for the stated QA date. Retain a
+      signed copy (electronic or printed) per institutional QA document-retention policy.</p>
+    </div>
+  </details>
+
+  </div>
+
+  <div class="setup">
+    <p class="setup-title" style="color:var(--accent-dark)">Measurement Setup</p>
+    <div class="setup-grid sec-el">
+      <div class="field"><label>SSD (<span class="unit">cm</span>)</label><input type="text" id="el-mod-ssd" value="100"></div>
+      <div class="field"><label>MU delivered</label><input type="number" id="el-mod-mu" value="100"></div>
+      <div class="field"><label>Field size</label><input type="text" id="el-mod-fs" value="15×15 cm²"></div>
+      <div class="field"><label>Depth</label><input type="text" id="el-mod-depth" value="per energy (z_ref)"></div>
+      <div class="field"><label>Phantom</label><input type="text" id="el-mod-phantom" value="1D Water Phantom"></div>
+      <div class="field"><label>Chamber</label><input type="text" id="el-mod-chamber" value="IBA PPC-05, 1814"></div>
+      <div class="field"><label>Electrometer</label><input type="text" id="el-mod-electrometer" value="DOSE-1"></div>
+      <div class="field"><label>V<sub>1</sub> normal bias (<span class="unit">V</span>)</label><input type="number" id="el-mod-v1" value="300" step="1"></div>
+      <div class="field"><label>V<sub>2</sub> reduced bias, for k<sub>s</sub> (<span class="unit">V</span>)</label><input type="number" id="el-mod-v2" value="150" step="1"></div>
+      <div class="field readout"><label>V<sub>1</sub>/V<sub>2</sub> (auto)</label><input type="text" id="el-mod-vratio" readonly></div>
+      <div class="field"><label>Beam type (Table 9)</label>
+        <select id="el-mod-beamtype">
+          <option value="pulsed" selected>Pulsed</option>
+          <option value="scanned">Pulsed&ndash;scanned</option>
+        </select>
+      </div>
+      <div class="field"><label>Meter reading unit</label>
+        <select id="el-mod-readingunit">
+          <option value="nC" selected>nC (charge)</option>
+          <option value="rdg">rdg (raw display units)</option>
+        </select>
+      </div>
+      <div class="field"><label>k<sub>elec</sub> (<span class="unit">nC</span>/rdg, if rdg)</label><input type="number" id="el-mod-kelec" value="1" step="0.0001"></div>
+      <div class="field"><label>N<sub>D,w</sub> mantissa</label><input type="number" id="el-mod-ndw-mant" value="58.71" step="0.0001"></div>
+      <div class="field"><label>&times;10^ (exponent)</label><input type="number" id="el-mod-ndw-exp" value="0" step="1"></div>
+      <div class="field"><label>N<sub>D,w</sub> unit</label>
+        <select id="el-mod-ndw-unit">
+          <option value="cGynC" selected>cGy/nC</option>
+          <option value="GynC">Gy/nC</option>
+          <option value="GyC">Gy/C</option>
+          <option value="cGyC">cGy/C</option>
+        </select>
+      </div>
+      <div class="field readout"><label>N<sub>D,w</sub> (auto, <span class="unit">cGy/nC</span>)</label><input type="text" id="el-mod-ndw" readonly></div>
+      <div class="field"><label>T measured (<span class="unit">&deg;C</span>)</label><input type="number" id="el-mod-t" value="20" step="0.1"></div>
+      <div class="field"><label>P measured (<span class="unit">mbar</span>)</label><input type="number" id="el-mod-p" value="1013.25" step="0.01"></div>
+      <div class="field readout"><label>k<sub>TP</sub> (auto)</label><input type="text" id="el-mod-ktp" readonly></div>
+    </div>
+  </div>
+
+  <div class="cards sec-el" id="el-mod-cards"></div>
+
+  <div class="summary sec-el">
+    <p class="summary-title">Summary &mdash; Absolute Dose Determination (Electron Beams)</p>
+    <p class="summary-sub">Determination of the absorbed dose to water in an electron beam &mdash; IAEA TRS-398</p>
+    <table class="sum-table" id="el-summary-table">
+      <thead>
+        <tr>
+          <th>Energy</th><th>R<sub>50</sub> (g/cm&sup2;)</th><th>z<sub>ref</sub> (g/cm&sup2;)</th>
+          <th>k<sub>Q,Qo</sub></th><th>PDD/TPR (%)</th><th>M<sub>avg</sub> (<span class="unit">nC</span>)</th>
+          <th>k<sub>pol</sub></th><th>k<sub>s</sub></th><th>k<sub>TP</sub></th>
+          <th>Output (<span class="unit">cGy/MU</span>)</th><th>Baseline</th><th>% Variation</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><b>k<sub>pol</sub></b> = (|M<sub>+V1</sub>| + |M<sub>&minus;V1</sub>|) / (2&middot;M<sub>+V1</sub>)</span>
+    <span><b>k<sub>s</sub></b> = a<sub>0</sub> + a<sub>1</sub>&middot;(M<sub>V1</sub>/M<sub>V2</sub>) + a<sub>2</sub>&middot;(M<sub>V1</sub>/M<sub>V2</sub>)&sup2; &nbsp;(TRS-398 Table 9 coefficients, looked up / interpolated at the typed V1/V2)</span>
+    <span><b>k<sub>TP</sub></b> = (P&#8320;/P)&middot;[(273.2+T)/(273.2+T&#8320;)]</span>
+    <span><b>Output</b> = (M<sub>avg,+V1</sub> &middot; N<sub>D,w</sub> &middot; k<sub>pol</sub> &middot; k<sub>s</sub> &middot; k<sub>Q,Qo</sub> &middot; k<sub>TP</sub>) / PDD(%)</span>
+    <span>Readings may be typed in nC or in raw electrometer units (rdg); rdg is converted to nC via M[nC] = M[rdg]&middot;k<sub>elec</sub></span>
+    <span>N<sub>D,w</sub> is typed as mantissa &times; 10^exponent in Gy/C, Gy/nC, cGy/nC or cGy/C, and auto-converted to cGy/nC for the Output formula</span>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Performed by</label><input type="text" id="el-signoff-performed">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="el-signoff-performed-sig"></div>
+    <div class="field"><label>Checked by</label><input type="text" id="el-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="el-signoff-checked-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="el-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="el-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Formalism per IAEA TRS-398 (Absorbed Dose Determination in External Beam Radiotherapy). Monthly output constancy
+    tolerance per TG-142 / AERB is &plusmn;2% of baseline unless otherwise specified by department protocol.
+    <span class="refs">Ref: IAEA TRS-398 (2000/2006 update), Secs 6.4 &amp; 7.4 &middot; AAPM TG-142 &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+
+  
+<div class="panel" id="panel-tpr" data-panel="tpr">
+  <div class="panelhead sec-tpr">
+    <p class="lh-title">Photon Beam Quality Verification &mdash; TPR<sub>20,10</sub></p>
+    <p class="lh-sub">TrueBeam Linear Accelerator &mdash; SVC Site &middot; Beam-quality index per IAEA TRS-398, Table 12 / Section 6.3</p>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>QA Date</label><input type="date" id="tpr-qaDate">
+      <label>Report No.</label><input type="text" id="tpr-docId" placeholder="MPQA-TPR-##">
+      <label>Machine</label><input type="text" id="tpr-machineId" value="TrueBeam (SVC)">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-tpr">
+    <div class="g-item"><label>Drift Tolerance &plusmn;</label><input type="number" id="tpr-tolerance" value="1" step="0.1"><span>%</span></div>
+    <div class="g-item">SCD = 100 cm &middot; Field 10&times;10 cm&sup2; at SCD</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="tpr-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-tpr" id="tpr-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="sec-tpr">
+  
+  <details class="bg">
+    <summary>Background &amp; Formalism — Record Reference</summary>
+    <div class="bg-body">
+      <h4>Definition (IAEA TRS-398, Table 12 / Section 6.3)</h4>
+      <p><b>TPR<sub>20,10</sub></b> &mdash; tissue&ndash;phantom ratio in water at depths of 20 and 10 g/cm&sup2;, for a
+      10&nbsp;cm&nbsp;&times;&nbsp;10&nbsp;cm field defined at the plane of the detector with a source&ndash;chamber
+      distance (SCD) of 100&nbsp;cm &mdash; the beam-quality index recommended by TRS-398 for high-energy photon beams,
+      used in place of the accelerator potential or PDD(10) because it is largely independent of electron
+      contamination of the incident beam.</p>
+      <p><span class="cite">TPR<sub>20,10</sub> = M<sub>20</sub> / M<sub>10</sub></span>, the ratio of the (ion-recombination
+      and polarity corrected) chamber readings at 20 and 10&nbsp;g/cm&sup2; depth, SCD fixed at 100&nbsp;cm for both
+      readings so the field size at the chamber is constant. Per TRS-398 Table 12, recombination effects at the two
+      depths should be checked and corrected for if they differ appreciably with depth.</p>
+      <h4>Use of TPR<sub>20,10</sub></h4>
+      <p>TRS-398 Table 13 specifies the reference depth for absolute dosimetry: z<sub>ref</sub>&nbsp;=&nbsp;10&nbsp;g/cm&sup2;
+      for TPR<sub>20,10</sub>&nbsp;&ge;&nbsp;0.70, and 10 g/cm&sup2; (or 5 g/cm&sup2;) for TPR<sub>20,10</sub>&nbsp;&lt;&nbsp;0.70.
+      The measured TPR<sub>20,10</sub> also indexes the chamber-specific beam-quality correction factor k<sub>Q,Qo</sub>
+      via TRS-398 Table 14 (adapted from Andreo) &mdash; this sheet linearly interpolates that table for the selected
+      cylindrical chamber, for record and cross-check purposes. <b>The resulting k<sub>Q,Qo</sub> is a reference estimate
+      only</b> &mdash; verify against the chamber's own calibration certificate before use in the Photon Output tab.</p>
+      <h4>Monitoring purpose</h4>
+      <p>Beyond its role in absolute calibration, tracking TPR<sub>20,10</sub> month to month is a sensitive check of
+      accelerator beam-energy (spectral) stability, independent of the absolute output check.</p>
+      <h4>Reference TPR<sub>20,10</sub> grid used for k<sub>Q,Qo</sub> interpolation (TRS-398 Table 14)</h4>
+      <table class="reftable"><thead><tr><th>TPR<sub>20,10</sub> grid points</th></tr></thead><tbody>
+      <tr><td>0.50, 0.53, 0.56, 0.59, 0.62, 0.65, 0.68, 0.70, 0.72, 0.74, 0.76, 0.78, 0.80, 0.82, 0.84</td></tr>
+      </tbody></table>
+    </div>
+  </details>
+
+  </div>
+
+  <div class="setup">
+    <p class="setup-title" style="color:var(--accent-dark)">Measurement Setup</p>
+    <div class="setup-grid sec-tpr">
+      <div class="field"><label>SCD (<span class="unit">cm</span>)</label><input type="text" id="tpr-mod-scd" value="100"></div>
+      <div class="field"><label>MU delivered</label><input type="number" id="tpr-mod-mu" value="100"></div>
+      <div class="field"><label>Field size at SCD</label><input type="text" id="tpr-mod-fs" value="10×10 cm²"></div>
+      <div class="field"><label>Phantom</label><input type="text" id="tpr-mod-phantom" value="1D Water Phantom"></div>
+      <div class="field"><label>Chamber</label><input type="text" id="tpr-mod-chamber" value="FC65-G, IBA 4201"></div>
+      <div class="field"><label>Electrometer</label><input type="text" id="tpr-mod-electrometer" value="DOSE-1"></div>
+      <div class="field"><label>Bias voltage (<span class="unit">V</span>)</label><input type="text" id="tpr-mod-voltage" value="+300"></div>
+      <div class="field"><label>T measured (<span class="unit">&deg;C</span>)</label><input type="number" id="tpr-mod-t" value="20" step="0.1"></div>
+      <div class="field"><label>P measured (<span class="unit">mbar</span>)</label><input type="number" id="tpr-mod-p" value="1013.25" step="0.01"></div>
+      <div class="field"><label>k<sub>Q,Qo</sub> ref. chamber</label>
+        <select id="tpr-chamber"></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards sec-tpr" id="tpr-mod-cards"></div>
+
+  <div class="summary sec-tpr">
+    <p class="summary-title">Summary &mdash; Photon Beam Quality (TPR<sub>20,10</sub>)</p>
+    <table class="sum-table" id="tpr-summary-table">
+      <thead>
+        <tr>
+          <th>Energy</th><th>M<sub>20</sub> (<span class="unit">nC</span>)</th><th>M<sub>10</sub> (<span class="unit">nC</span>)</th><th>TPR<sub>20,10</sub></th>
+          <th>Baseline</th><th>% Drift</th><th>k<sub>Q,Qo</sub> (ref.)</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><b>TPR<sub>20,10</sub></b> = M<sub>20</sub> / M<sub>10</sub> (readings at 20 and 10 g/cm&sup2; depth, SCD = 100 cm, 10&times;10 cm&sup2; field)</span>
+    <span><b>z<sub>ref</sub></b> = 10 g/cm&sup2; for TPR<sub>20,10</sub> &ge; 0.70 (TRS-398 Table 13)</span>
+    <span><b>k<sub>Q,Qo</sub></b> interpolated from TRS-398 Table 14 for the selected chamber &mdash; reference only</span>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Performed by</label><input type="text" id="tpr-signoff-performed">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="tpr-signoff-performed-sig"></div>
+    <div class="field"><label>Checked by</label><input type="text" id="tpr-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="tpr-signoff-checked-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="tpr-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="tpr-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Beam-quality index formalism per IAEA TRS-398, Table 12 (reference conditions for TPR<sub>20,10</sub>) and Table 13
+    (reference depth selection). k<sub>Q,Qo</sub> values interpolated from TRS-398 Table 14 (adapted from Andreo) for
+    record/cross-check purposes only &mdash; always confirm against the chamber's calibration certificate.
+    <span class="refs">Ref: IAEA TRS-398 (2000/2006 update), Secs 6.3 &amp; 6.4, Tables 12&ndash;14 &middot; AAPM TG-142 &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+
+
+  </div>
+
+  <div class="subpanel" id="sub-imaging" data-subpanel="imaging">
+    <div class="placeholder-box">
+      <p class="placeholder-title">Imaging QA</p>
+      <p class="placeholder-text">Imaging QA modules will be added here.</p>
+    </div>
+  </div>
+
+  <div class="subpanel" id="sub-mlc" data-subpanel="mlc">
+<div class="panel-standalone" id="panel-mlc" data-panel="mlc">
+  <div class="panelhead sec-mlc">
+    <p class="lh-title">Monthly Multileaf Collimator (MLC) Quality Assurance</p>
+    <p class="lh-sub">Reference: AAPM TG-142 &middot; LoSasso et al. (Med. Phys. 1998) leaf-transmission/DLG method &middot; departmental MLC QA protocol</p>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>LINAC Name</label><input type="text" id="mlc-linacname" value="TrueBeam SVC">
+      <label>Make/Model</label><input type="text" id="mlc-makemodel" value="Varian TrueBeam (SVC)">
+      <label>Report No.</label><input type="text" id="mlc-docId" placeholder="MPQA-MLC-##">
+      <label>Date</label><input type="text" id="mlc-date" value="">
+      <label>Month/Year</label><input type="text" id="mlc-monthyear" value="">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-mlc">
+    <div class="g-item">Two departmental MLC QA record formats are combined below — <span class="mlc-src a">A</span> earlier (Novalis-era) format and <span class="mlc-src b">B</span> later (2019) format. Tests unique to either format are labelled; shared tests use the merged parameter set.</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="mlc-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-mlc" id="mlc-printBtn">Print / Save PDF</button>
+  </div>
+
+  <p style="font-family:var(--disp); font-weight:700; font-size:15px; margin:18px 0 8px; color:var(--ink);">I. Mechanical Tests</p>
+
+  <div class="mech-card">
+    <h3>1. Repeatability <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">ATP (Acceptance Test Procedure) files loaded; different MLC shapes checked for repeatability using graph sheet / template.</p>
+    <table>
+      <tr><th>Parameter</th><th>Result</th><th>Pass/Fail</th></tr>
+      <tr><td>MLC leaf-position repeatability across ATP shape sequence</td>
+        <td><select id="mlc-s1-result"><option value="ok">OK</option><option value="notok">Not OK</option></select></td>
+        <td id="mlc-s1-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s1" data-eg-label="Repeatability AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>2. Leaf Position Accuracy <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 1 mm (Bank A / Bank B deviation from programmed leaf position, per ATP pattern)</p>
+    <table>
+      <tr><th>Leaf position pattern</th><th>Bank A dev. (mm)</th><th>Bank B dev. (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="mlc-s2-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s2" data-eg-label="Leaf Position Accuracy AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>3. MLC Field-Size / Shape Accuracy <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 2 mm on X and Y field dimension, all MLC-defined square field sizes</p>
+    <table>
+      <tr><th>Field size (cm&sup2;)</th><th>X1 (cm)</th><th>X2 (cm)</th><th>&Delta;X</th><th>Y1 (cm)</th><th>Y2 (cm)</th><th>&Delta;Y</th><th>Pass/Fail</th></tr>
+      <tbody id="mlc-s3-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s3" data-eg-label="MLC Field-Size / Shape Accuracy AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>4. Collimator Clutch Slip <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Gantry/collimator set to an asymmetric, off-balance MLC/jaw position (loading the collimator clutch); collimator angle readout observed over ~3 minutes. Tolerance: &le; 0.1&deg; change.</p>
+    <table>
+      <tr><th>Parameter</th><th>Observed change (&deg;)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Collimator angle-readout drift under sustained asymmetric MLC/jaw load</td>
+        <td><input type="number" step="0.01" id="mlc-s4-drift" value="0" data-tol="0.1"></td>
+        <td class="tolcell">&le; 0.1&deg;</td><td id="mlc-s4-drift-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s4" data-eg-label="Collimator Clutch Slip AB"></div>
+  </div>
+
+  <p style="font-family:var(--disp); font-weight:700; font-size:15px; margin:22px 0 8px; color:var(--ink);">II. Radiation Tests</p>
+
+  <div class="mech-card">
+    <h3>5. Coincidence of Optical and Radiation Field <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 2 mm (measured field size vs. set field size, film at isocentre)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Film</label><input type="text" id="mlc-s5-film" value="Gafchromic film"></div>
+      <div class="fld2"><label>Energy</label><input type="text" id="mlc-s5-energy" value="6 MV"></div>
+      <div class="fld2"><label>Dose rate (MU/min)</label><input type="number" id="mlc-s5-doserate" value="600"></div>
+      <div class="fld2"><label>Delivered MU</label><input type="number" id="mlc-s5-mu" value="1500"></div>
+      <div class="fld2"><label>Set field size (cm&sup2;)</label><input type="text" id="mlc-s5-setfs" value="10 x 10 (MLC)"></div>
+    </div>
+    <table>
+      <tr><th>Axis</th><th>Set (cm)</th><th>Observed (cm)</th><th>&Delta; (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>X</td><td><input type="number" step="0.01" class="narrow" id="mlc-s5-setx" value="10"></td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s5-obsx" value="10"></td>
+        <td id="mlc-s5-dx" class="tolcell"></td><td class="tolcell">&plusmn; 2 mm</td><td id="mlc-s5-x-pf"></td></tr>
+      <tr><td>Y</td><td><input type="number" step="0.01" class="narrow" id="mlc-s5-sety" value="10"></td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s5-obsy" value="10"></td>
+        <td id="mlc-s5-dy" class="tolcell"></td><td class="tolcell">&plusmn; 2 mm</td><td id="mlc-s5-y-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s5" data-eg-label="Coincidence of Optical and Radiation Field AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>6. Collimator Spoke Shot <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Narrow MLC-defined strip field exposed at multiple collimator angles onto film at isocentre; observed isocentre spot diameter checked against tolerance.</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Collimator angles (&deg;)</label><input type="text" id="mlc-s6-angles" value="0, 45, 90, 270, 315" style="width:220px;"></div>
+      <div class="fld2"><label>Set field size</label><input type="text" id="mlc-s6-fs" value="0.4 x 10-15 cm&sup2; (MLC)"></div>
+    </div>
+    <table>
+      <tr><th>Parameter</th><th>Observed (mm dia.)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Isocentre spot diameter (all collimator angles)</td>
+        <td><input type="number" step="0.1" id="mlc-s6-dia" value="1" data-tol="2"></td>
+        <td class="tolcell">&le; 2 mm dia</td><td id="mlc-s6-dia-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s6" data-eg-label="Collimator Spoke Shot AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>7. Gantry Spoke Shot <span class="mlc-src a">A</span></h3>
+    <p class="refline">Same technique as Collimator Spoke Shot, film exposed at multiple gantry angles with collimator fixed.</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Gantry angles (&deg;)</label><input type="text" id="mlc-s7-angles" value="0, 45, 90, 315"></div>
+      <div class="fld2"><label>Set field size</label><input type="text" id="mlc-s7-fs" value="0.4 x 10 cm&sup2; (MLC)"></div>
+    </div>
+    <table>
+      <tr><th>Parameter</th><th>Observed (mm dia.)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Isocentre spot diameter (all gantry angles)</td>
+        <td><input type="number" step="0.1" id="mlc-s7-dia" value="1" data-tol="1"></td>
+        <td class="tolcell">&le; 1 mm dia</td><td id="mlc-s7-dia-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s7" data-eg-label="Gantry Spoke Shot A"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>8. Couch Spoke Shot <span class="mlc-src a">A</span></h3>
+    <p class="refline">Same technique as Collimator Spoke Shot, film exposed at multiple couch angles with collimator/gantry fixed.</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Couch angles (&deg;)</label><input type="text" id="mlc-s8-angles" value="0, 45, 90, 315"></div>
+      <div class="fld2"><label>Set field size</label><input type="text" id="mlc-s8-fs" value="0.4 x 10 cm&sup2; (MLC)"></div>
+    </div>
+    <table>
+      <tr><th>Parameter</th><th>Observed (mm dia.)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Isocentre spot diameter (all couch angles)</td>
+        <td><input type="number" step="0.1" id="mlc-s8-dia" value="1" data-tol="1"></td>
+        <td class="tolcell">&le; 1 mm dia</td><td id="mlc-s8-dia-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s8" data-eg-label="Couch Spoke Shot A"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>9. MLC Alignment — Tongue &amp; Groove / Rounded Leaf-End Effect <span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 0.5 mm. Film exposed at 0&deg; collimator; interleaf (tongue-and-groove) underdose lines and rounded-leaf-end optical-density uniformity assessed.</p>
+    <table>
+      <tr><th>Observation</th><th>Result</th><th>Pass/Fail</th></tr>
+      <tr><td>Tongue &amp; groove effect</td>
+        <td><select id="mlc-s9-tg"><option value="pass">Pass</option><option value="fail">Fail</option></select></td>
+        <td id="mlc-s9-tg-pf"></td></tr>
+      <tr><td>Rounded leaf-end effect (uniform optical density)</td>
+        <td><select id="mlc-s9-rle"><option value="pass">Pass</option><option value="fail">Fail</option></select></td>
+        <td id="mlc-s9-rle-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s9" data-eg-label="MLC Alignment — Tongue &amp; Groove / Rounded Leaf-End Effect B"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>10. Garden Fence Test <span class="mlc-src a">A</span></h3>
+    <p class="refline">Test pattern of narrow (2 mm) bands spaced at 2 cm intervals, exposed on EPID; each leaf match-line analyzed by FWHM.</p>
+    <table>
+      <tr><th>Observation</th><th>Result</th><th>Pass/Fail</th></tr>
+      <tr><td>Garden fence — without induced error</td>
+        <td><select id="mlc-s10-noerr"><option value="pass">Pass</option><option value="fail">Fail</option></select></td>
+        <td id="mlc-s10-noerr-pf"></td></tr>
+      <tr><td>Garden fence — with induced error (sensitivity check)</td>
+        <td><select id="mlc-s10-err"><option value="pass">Pass</option><option value="fail">Fail</option></select></td>
+        <td id="mlc-s10-err-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s10" data-eg-label="Garden Fence Test A"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>11. Picket Fence Test <span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 0.5 mm. EPID picket-fence pattern; analyzed in TPS/offline-review software.</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Dose rate (MU/min)</label><input type="number" id="mlc-s11-doserate" value="300"></div>
+      <div class="fld2"><label>Delivered MU</label><input type="number" id="mlc-s11-mu" value="5"></div>
+      <div class="fld2"><label>Set field size</label><input type="text" id="mlc-s11-fs" value="12 x 40 cm&sup2; (Jaw)"></div>
+    </div>
+    <table>
+      <tr><th>Observation</th><th>Result</th><th>Pass/Fail</th></tr>
+      <tr><td>Picket fence — without error</td>
+        <td><select id="mlc-s11-noerr"><option value="pass">Pass</option><option value="fail">Fail</option></select></td>
+        <td id="mlc-s11-noerr-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s11" data-eg-label="Picket Fence Test B"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>12. Sweeping Field — Gravity Effect <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &plusmn; 3% variation vs. gantry-0&deg; reference reading</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Energy</label><input type="text" id="mlc-s12-energy" value="6 MV"></div>
+      <div class="fld2"><label>Dose rate (MU/min)</label><input type="number" id="mlc-s12-doserate" value="400"></div>
+      <div class="fld2"><label>Delivered MU</label><input type="number" id="mlc-s12-mu" value="300"></div>
+      <div class="fld2"><label>Chamber</label><input type="text" id="mlc-s12-chamber" value="CC13"></div>
+      <div class="fld2"><label>Electrometer</label><input type="text" id="mlc-s12-electrometer" value="Dose1"></div>
+      <div class="fld2"><label>Phantom</label><input type="text" id="mlc-s12-phantom" value="Sweeping-field mini phantom"></div>
+      <div class="fld2"><label>Depth (cm)</label><input type="number" step="0.1" id="mlc-s12-depth" value="1.5"></div>
+      <div class="fld2"><label>Slit width (mm)</label><input type="number" step="0.1" id="mlc-s12-slit" value="2"></div>
+    </div>
+    <table>
+      <tr><th>Gantry angle</th><th>Meter reading (nC)</th><th>Normalised value</th><th>% Variation</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="mlc-s12-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s12" data-eg-label="Sweeping Field — Gravity Effect AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>13. Average MLC Transmission <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Method A (per-energy, Bank A/B, ≤ 2% tolerance) &middot; Method B (sweeping-field-derived combined reading, &lt; 4% tolerance)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Field size</label><input type="text" id="mlc-s13-fs" value="10 x 10 cm&sup2; (Jaws)"></div>
+      <div class="fld2"><label>Chamber</label><input type="text" id="mlc-s13-chamber" value="FC65-G (0.65 cc)"></div>
+      <div class="fld2"><label>Depth (cm)</label><input type="number" step="0.1" id="mlc-s13-depth" value="5"></div>
+    </div>
+    <p class="mlc-note"><span class="mlc-src a">A</span> Method A — per energy, Bank A / Bank B (static field)</p>
+    <table>
+      <tr><th>Energy</th><th>Meter reading open (nC)</th><th>Bank A (nC)</th><th>% Trans. A</th><th>Bank B (nC)</th><th>% Trans. B</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="mlc-s13a-body"></tbody>
+    </table>
+    <p class="mlc-note"><span class="mlc-src b">B</span> Method B — sweeping-field-derived combined transmission reading</p>
+    <table>
+      <tr><th>Meter reading open (nC)</th><th>Avg. meter reading Bank A (nC)</th><th>Avg. meter reading Bank B (nC)</th><th>% Transmission</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s13b-open" value="38.69"></td>
+        <td><input type="number" step="0.0001" class="wide" id="mlc-s13b-a" value="0.4481"></td>
+        <td><input type="number" step="0.0001" class="wide" id="mlc-s13b-b" value="0.4366"></td>
+        <td id="mlc-s13b-pct" class="tolcell"></td>
+        <td class="tolcell">&lt; 4%</td><td id="mlc-s13b-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s13" data-eg-label="Average MLC Transmission AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>14. Rounded (Closed-Field) MLC Transmission <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Tolerance: &le; 20% (fully closed MLC field vs. open field, per energy)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Field size</label><input type="text" id="mlc-s14-fs" value="10 x 10 / 20 x 20 cm&sup2;"></div>
+      <div class="fld2"><label>Chamber</label><input type="text" id="mlc-s14-chamber" value="FC65-G (0.65 cc)"></div>
+      <div class="fld2"><label>Depth (cm)</label><input type="number" step="0.1" id="mlc-s14-depth" value="5"></div>
+    </div>
+    <table>
+      <tr><th>Energy</th><th>Meter reading open (nC)</th><th>Meter reading closed MLC (nC)</th><th>% Transmission</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="mlc-s14-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="mlc-s14" data-eg-label="Rounded (Closed-Field) MLC Transmission AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>15. Dosimetric Leaf Gap (DLG) / Leaf Separation <span class="mlc-src a">A</span><span class="mlc-src b">B</span></h3>
+    <p class="refline">Sliding-gap sweep method (LoSasso et al. 1998): average MLC transmission R<sub>T</sub> measured, then for each nominal gap g the corrected reading is R<sub>g</sub>&prime; = R<sub>g</sub> &minus; R<sub>T</sub>&middot;(1&minus;g/W), where W is the sliding-window travel length. A linear fit g(R<sub>g</sub>&prime;) = a&middot;R<sub>g</sub>&prime; + b is made; DLG is the extrapolated gap at R<sub>g</sub>&prime; = 0, i.e. |b|. No pass/fail tolerance is specified in the source records — DLG is a reported, trended value, checked against the vendor-provided reference.</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Sliding-window travel, W (mm)</label><input type="number" id="mlc-s15-window" value="120"></div>
+      <div class="fld2"><label>Field size</label><input type="text" id="mlc-s15-fs" value="10 x 10 cm&sup2; (Jaws)"></div>
+      <div class="fld2"><label>Chamber</label><input type="text" id="mlc-s15-chamber" value="FC65-G (0.65 cc)"></div>
+    </div>
+
+    <p class="mlc-note"><span class="mlc-src a">A</span><span class="mlc-src b">B</span> 6 MV — Method A gap set (Varian reference: 1.8&ndash;2.0 mm, energy dependent)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Avg. MLC transmission R<sub>T</sub> (nC)</label><input type="number" step="0.0001" id="mlc-s15a6-rt" value="0.2308"></div>
+    </div>
+    <table>
+      <tr><th>Leaf gap g (mm)</th><th>Meter reading R<sub>g</sub> (nC)</th><th>R<sub>gT</sub></th><th>R<sub>g</sub>&prime; = R<sub>g</sub> &minus; R<sub>gT</sub></th></tr>
+      <tbody id="mlc-s15a6-body"></tbody>
+    </table>
+    <div class="regbox">
+      <div>Slope (a): <b id="mlc-s15a6-slope">—</b></div>
+      <div>Intercept (b): <b id="mlc-s15a6-intercept">—</b></div>
+      <div>DLG (|b|): <b id="mlc-s15a6-dlg">—</b> mm</div>
+      <div>R&sup2;: <b id="mlc-s15a6-r2">—</b></div>
+    </div>
+
+    <p class="mlc-note" style="margin-top:16px;"><span class="mlc-src a">A</span> 15 MV — Method A gap set (Varian reference: ~2.0 mm)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Avg. MLC transmission R<sub>T</sub> (nC)</label><input type="number" step="0.0001" id="mlc-s15a15-rt" value="0.2811"></div>
+    </div>
+    <table>
+      <tr><th>Leaf gap g (mm)</th><th>Meter reading R<sub>g</sub> (nC)</th><th>R<sub>gT</sub></th><th>R<sub>g</sub>&prime; = R<sub>g</sub> &minus; R<sub>gT</sub></th></tr>
+      <tbody id="mlc-s15a15-body"></tbody>
+    </table>
+    <div class="regbox">
+      <div>Slope (a): <b id="mlc-s15a15-slope">—</b></div>
+      <div>Intercept (b): <b id="mlc-s15a15-intercept">—</b></div>
+      <div>DLG (|b|): <b id="mlc-s15a15-dlg">—</b> mm</div>
+      <div>R&sup2;: <b id="mlc-s15a15-r2">—</b></div>
+    </div>
+
+    <p class="mlc-note" style="margin-top:16px;"><span class="mlc-src b">B</span> 6 MV — Method B gap set (Varian reference: 1.8 mm)</p>
+    <div class="setuprow">
+      <div class="fld2"><label>Avg. MLC transmission R<sub>T</sub> (nC)</label><input type="number" step="0.0001" id="mlc-s15b6-rt" value="0.44235"></div>
+    </div>
+    <table>
+      <tr><th>Leaf gap g (mm)</th><th>Meter reading R<sub>g</sub> (nC)</th><th>R<sub>gT</sub></th><th>R<sub>g</sub>&prime; = R<sub>g</sub> &minus; R<sub>gT</sub></th></tr>
+      <tbody id="mlc-s15b6-body"></tbody>
+    </table>
+    <div class="regbox">
+      <div>Slope (a): <b id="mlc-s15b6-slope">—</b></div>
+      <div>Intercept (b): <b id="mlc-s15b6-intercept">—</b></div>
+      <div>DLG (|b|): <b id="mlc-s15b6-dlg">—</b> mm</div>
+      <div>R&sup2;: <b id="mlc-s15b6-r2">—</b></div>
+    </div>
+    <div class="evidence-gallery" data-eg-key="mlc-s15" data-eg-label="Dosimetric Leaf Gap (DLG) / Leaf Separation AB"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>Remarks</h3>
+    <table>
+      <tr><td style="width:100%;"><textarea id="mlc-remarks" rows="3" style="width:100%; font-family:var(--body); font-size:12.5px; padding:7px 9px; border:1px solid var(--line); border-radius:6px; background:#FBFDFC; color:var(--ink); resize:vertical;" placeholder="Remarks / conclusion / follow-up actions"></textarea></td></tr>
+    </table>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Documented by</label><input type="text" id="mlc-signoff-documented">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mlc-signoff-documented-sig"></div>
+    <div class="field"><label>Checked by</label><input type="text" id="mlc-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mlc-signoff-checked-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="mlc-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="mlc-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    MLC QA per departmental protocol, combining the Novalis-era (2017) and 2019 record formats — see
+    LoSasso, Chui &amp; Ling, "Physical and dosimetric aspects of a multileaf collimation system used in the dynamic
+    mode for implementing IMRT" and AAPM TG-142. Overall record passes only if all individually-toleranced items
+    are within tolerance; DLG and remarks are reported values without a pass/fail criterion in the source records.
+    <span class="refs">Ref: LoSasso et al. 1998 &middot; AAPM TG-142 &middot; departmental MLC QA records (2017, 2019)</span>
+  </footer>
+</div>
+  </div>
+
+</div>
+
+<div class="mainview" id="view-annual" data-mainview="annual">
+  <div class="placeholder-box">
+    <p class="placeholder-title">Annual QA</p>
+    <p class="placeholder-text">Annual QA modules will be added here.</p>
+  </div>
+</div>
+
+
+</div>
+
+<script>
+/* =========================================================================
+   QA EVIDENCE GALLERY — reusable per-test image attachment widget.
+   Each test (mech-card / mlc test / energy card) gets its own gallery,
+   keyed by a unique test id, so evidence images stay tied to the exact
+   measurement that produced them. Images are resized client-side via
+   canvas (never upscaled) and kept in two forms: a small on-screen
+   thumbnail for fast browsing, and a high-resolution "full" copy used
+   for the full-screen viewer and swapped in automatically for printing.
+   Persisted to its own localStorage key, and folded into manual
+   backup/restore JSON so evidence travels with the QA data.
+   ========================================================================= */
+const EvidenceGallery = (function(){
+  const STORE_KEY = 'pgimer_trueBeam_qa_evidence_v1';
+  const THUMB_MAX = 480;      // px, long side — on-screen thumbnail
+  const FULL_MAX_DEFAULT = 2600; // px, long side — stored high-res copy
+  let store = {};
+  try{ store = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }catch(e){ store = {}; }
+
+  function persist(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+    catch(e){ console.warn('QA Evidence: local storage full or unavailable — image kept in memory only for this session.', e); }
+  }
+
+  function uid(){ return 'eg_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+  function getList(key){ return store[key] || (store[key] = []); }
+
+  function loadImage(src){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Could not decode image'));
+      img.src = src;
+    });
+  }
+
+  // Resize (never upscale) onto a canvas and export at the requested quality.
+  function drawResized(img, maxDim, mime, quality){
+    const longSide = Math.max(img.width, img.height);
+    const scale = longSide > maxDim ? (maxDim / longSide) : 1; // never upscale
+    const outW = Math.max(1, Math.round(img.width * scale));
+    const outH = Math.max(1, Math.round(img.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, outW, outH);
+    return quality !== undefined ? canvas.toDataURL(mime, quality) : canvas.toDataURL(mime);
+  }
+
+  async function processFile(file){
+    const rawDataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const img = await loadImage(rawDataUrl);
+    // Heuristic: screenshots / graphs / console captures are almost always PNG
+    // (or named accordingly) and contain fine text/line detail that JPEG
+    // blurs — keep those lossless. Camera photographs (JPEG from a phone/
+    // camera) are compressed at high quality instead, since lossless would
+    // be needlessly large for a photo of a setup.
+    const looksLikeGraphic = file.type === 'image/png' || /screenshot|screen[-_ ]?shot|console|graph|plot|chart/i.test(file.name);
+    const fullMime = looksLikeGraphic ? 'image/png' : 'image/jpeg';
+    // Don't exceed the image's own native resolution, and don't force small
+    // originals up to the cap — drawResized already never upscales.
+    const full = drawResized(img, FULL_MAX_DEFAULT, fullMime, fullMime === 'image/jpeg' ? 0.92 : undefined);
+    const thumb = drawResized(img, THUMB_MAX, 'image/jpeg', 0.78);
+    return { id: uid(), caption: '', full, thumb, w: img.width, h: img.height };
+  }
+
+  async function addFiles(key, fileList, cb){
+    const arr = getList(key);
+    const files = Array.from(fileList || []).filter(f => f.type && f.type.startsWith('image/'));
+    for(const f of files){
+      try{ arr.push(await processFile(f)); }
+      catch(e){ console.warn('QA Evidence: could not process', f.name, e); }
+    }
+    persist();
+    if(cb) cb();
+  }
+
+  async function replaceImage(key, id, file, cb){
+    const arr = getList(key);
+    const idx = arr.findIndex(r => r.id === id);
+    if(idx === -1) return;
+    try{
+      const rec = await processFile(file);
+      rec.id = id;
+      rec.caption = arr[idx].caption || '';
+      arr[idx] = rec;
+      persist();
+    }catch(e){ console.warn('QA Evidence: could not replace image', e); }
+    if(cb) cb();
+  }
+
+  function removeImage(key, id, cb){
+    store[key] = getList(key).filter(r => r.id !== id);
+    persist();
+    if(cb) cb();
+  }
+
+  function setCaption(key, id, caption){
+    const rec = getList(key).find(r => r.id === id);
+    if(rec){ rec.caption = caption; persist(); }
+  }
+
+  function exportAll(){ return store; }
+  function importAll(data){ if(data && typeof data === 'object'){ store = data; persist(); } }
+
+  // ---- Full-screen viewer with pinch-to-zoom / double-tap-to-zoom ----
+  let viewerEl = null;
+  function ensureViewer(){
+    if(viewerEl) return viewerEl;
+    viewerEl = document.createElement('div');
+    viewerEl.className = 'eg-viewer';
+    viewerEl.innerHTML = `<button type="button" class="eg-viewer-close" aria-label="Close">&times;</button>
+      <div class="eg-viewer-stage"><img src="" alt="QA evidence — full resolution"></div>
+      <div class="eg-viewer-cap"></div>`;
+    document.body.appendChild(viewerEl);
+    const img = viewerEl.querySelector('img');
+    let scale = 1, panX = 0, panY = 0, startDist = 0, startScale = 1, dragging = false, lastX = 0, lastY = 0;
+    function apply(){ img.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`; }
+    function reset(){ scale = 1; panX = 0; panY = 0; apply(); }
+    function close(){ viewerEl.classList.remove('open'); reset(); }
+    viewerEl.querySelector('.eg-viewer-close').addEventListener('click', close);
+    viewerEl.addEventListener('click', (e) => { if(e.target === viewerEl) close(); });
+    img.addEventListener('dblclick', () => { scale = (scale === 1) ? 2.5 : 1; panX = 0; panY = 0; apply(); });
+    img.addEventListener('touchstart', (e) => {
+      if(e.touches.length === 2){
+        startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        startScale = scale;
+      } else if(e.touches.length === 1){
+        dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+      }
+    }, {passive:true});
+    img.addEventListener('touchmove', (e) => {
+      if(e.touches.length === 2 && startDist){
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        scale = Math.min(5, Math.max(1, startScale * (dist / startDist)));
+        apply();
+      } else if(e.touches.length === 1 && dragging && scale > 1){
+        panX += e.touches[0].clientX - lastX; panY += e.touches[0].clientY - lastY;
+        lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+        apply();
+      }
+    }, {passive:true});
+    img.addEventListener('touchend', (e) => { if(e.touches.length === 0){ dragging = false; startDist = 0; } });
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && viewerEl.classList.contains('open')) close(); });
+    viewerEl._reset = reset;
+    return viewerEl;
+  }
+
+  function openViewer(key, id){
+    const rec = getList(key).find(r => r.id === id);
+    if(!rec) return;
+    const v = ensureViewer();
+    v._reset();
+    v.querySelector('img').src = rec.full;
+    v.querySelector('.eg-viewer-cap').textContent = rec.caption || '';
+    v.classList.add('open');
+  }
+
+  // ---- Rendering ----
+  function renderThumb(key, rec, container, label){
+    const cell = document.createElement('div');
+    cell.className = 'eg-thumb';
+    cell.innerHTML = `<img src="${rec.thumb}" data-full="${rec.full}" alt="QA evidence${label ? ' — ' + label : ''}">
+      <input type="text" class="eg-caption" placeholder="Caption (optional)" value="">
+      <div class="eg-thumb-actions">
+        <button type="button" class="eg-mini eg-view">View</button>
+        <label class="eg-mini eg-replace">Replace<input type="file" accept="image/*" style="display:none;"></label>
+        <button type="button" class="eg-mini eg-remove">Remove</button>
+      </div>`;
+    cell.querySelector('.eg-caption').value = rec.caption || '';
+    cell.querySelector('.eg-view').addEventListener('click', () => openViewer(key, rec.id));
+    cell.querySelector('img').addEventListener('click', () => openViewer(key, rec.id));
+    cell.querySelector('.eg-caption').addEventListener('change', (e) => setCaption(key, rec.id, e.target.value));
+    cell.querySelector('.eg-remove').addEventListener('click', () => {
+      if(confirm('Remove this image?')) removeImage(key, rec.id, () => render(container, key, label));
+    });
+    const replaceInput = cell.querySelector('.eg-replace input');
+    replaceInput.addEventListener('change', async () => {
+      if(!replaceInput.files || !replaceInput.files[0]) return;
+      await replaceImage(key, rec.id, replaceInput.files[0], () => render(container, key, label));
+    });
+    return cell;
+  }
+
+  function render(container, key, label){
+    if(!container) return;
+    container.innerHTML = '';
+    container.classList.add('eg-wrap');
+    container.dataset.egKey = key;
+    if(label) container.dataset.egLabel = label;
+    const list = getList(key);
+    container.classList.toggle('eg-empty-state', list.length === 0);
+
+    const head = document.createElement('div');
+    head.className = 'eg-head';
+    head.innerHTML = `<span class="eg-title">\uD83D\uDCF7 QA Evidence <span class="eg-optional">— optional</span></span>
+      <label class="eg-addbtn">+ Add Images<input type="file" accept="image/*" multiple class="eg-file-input" style="display:none;"></label>`;
+    container.appendChild(head);
+
+    const strip = document.createElement('div');
+    strip.className = 'eg-strip';
+    if(list.length === 0) strip.innerHTML = '<div class="eg-empty">No images added yet.</div>';
+    else list.forEach(rec => strip.appendChild(renderThumb(key, rec, container, label)));
+    container.appendChild(strip);
+
+    const fileInput = head.querySelector('.eg-file-input');
+    const addBtn = head.querySelector('.eg-addbtn');
+    fileInput.addEventListener('change', async () => {
+      if(!fileInput.files || !fileInput.files.length) return;
+      addBtn.classList.add('eg-busy');
+      await addFiles(key, fileInput.files, () => render(container, key, label));
+    });
+  }
+
+  function init(container, key, label){
+    if(typeof container === 'string') container = document.getElementById(container);
+    render(container, key, label);
+  }
+
+  function initAllPending(){
+    document.querySelectorAll('.evidence-gallery[data-eg-key]').forEach(el => {
+      if(el.dataset.egInited) return;
+      el.dataset.egInited = '1';
+      init(el, el.dataset.egKey, el.dataset.egLabel || '');
+    });
+  }
+
+  // Swap thumbnail -> full-resolution image just for the print pass, so
+  // printed QA evidence stays sharp instead of using the compressed preview.
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.eg-thumb img').forEach(img => {
+      img.dataset._thumbSrc = img.src;
+      if(img.dataset.full) img.src = img.dataset.full;
+    });
+  });
+  window.addEventListener('afterprint', () => {
+    document.querySelectorAll('.eg-thumb img').forEach(img => {
+      if(img.dataset._thumbSrc) img.src = img.dataset._thumbSrc;
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', initAllPending);
+  return { init, initAllPending, exportAll, importAll };
+})();
+EvidenceGallery.initAllPending();
+
+
+function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,''); }
+function avg3(a,b,c){
+  const vals = [a,b,c].filter(v => v !== '' && v !== null && !isNaN(v)).map(Number);
+  if(vals.length === 0) return null;
+  return vals.reduce((s,v)=>s+v,0)/vals.length;
+}
+function num(id){
+  const el = document.getElementById(id);
+  if(!el) return null;
+  const v = el.value;
+  if(v === '' || v === null) return null;
+  const n = parseFloat(v);
+  return isNaN(n) ? null : n;
+}
+function setTxt(elId, val, digits){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.textContent = (val === null || val === undefined || isNaN(val)) ? '\u2014' : Number(val).toFixed(digits);
+}
+
+/* =========================================================================
+   TRS-398 Table 9 — quadratic-fit coefficients a0,a1,a2 for the two-voltage
+   ion-recombination correction k_s, as a function of the polarizing-voltage
+   ratio V1/V2, separately for pulsed and pulsed-scanned beams.
+     k_s = a0 + a1*(M1/M2) + a2*(M1/M2)^2      ......Eq. (14)
+   The table is only tabulated at V1/V2 = 2.0, 2.5, 3.0, 3.5, 4.0, 5.0.
+   Any voltage pair typed in (e.g. 400 V / 100 V -> ratio 4.0, or
+   350 V / 120 V -> ratio 2.917) is resolved against this grid: an exact
+   grid ratio is used as-is, a ratio between grid points is linearly
+   interpolated, and a ratio outside 2.0-5.0 is clamped to the nearest end
+   of the table (flagged as an out-of-range extrapolation) since TRS-398
+   does not define coefficients beyond that range.
+   ========================================================================= */
+const TABLE9 = {
+  pulsed: [
+    {ratio:2.0, a0:2.337, a1:-3.636, a2:2.299},
+    {ratio:2.5, a0:1.474, a1:-1.587, a2:1.114},
+    {ratio:3.0, a0:1.198, a1:-0.875, a2:0.677},
+    {ratio:3.5, a0:1.080, a1:-0.542, a2:0.463},
+    {ratio:4.0, a0:1.022, a1:-0.363, a2:0.341},
+    {ratio:5.0, a0:0.975, a1:-0.188, a2:0.214}
+  ],
+  scanned: [
+    {ratio:2.0, a0:4.711, a1:-8.242, a2:4.533},
+    {ratio:2.5, a0:2.719, a1:-3.977, a2:2.261},
+    {ratio:3.0, a0:2.001, a1:-2.402, a2:1.404},
+    {ratio:3.5, a0:1.665, a1:-1.647, a2:0.984},
+    {ratio:4.0, a0:1.468, a1:-1.200, a2:0.734},
+    {ratio:5.0, a0:1.279, a1:-0.750, a2:0.474}
+  ]
+};
+
+function getTable9Coeffs(ratio, beamType){
+  const rows = TABLE9[beamType] || TABLE9.pulsed;
+  if(ratio === null || ratio === undefined || isNaN(ratio)){
+    return {a0:null, a1:null, a2:null, note:''};
+  }
+  const first = rows[0], last = rows[rows.length-1];
+  if(ratio <= first.ratio){
+    const note = ratio < first.ratio ? `V1/V2 below table range (min ${first.ratio.toFixed(1)}) — extrapolated at ${first.ratio.toFixed(1)}` : '';
+    return {a0:first.a0, a1:first.a1, a2:first.a2, note};
+  }
+  if(ratio >= last.ratio){
+    const note = ratio > last.ratio ? `V1/V2 above table range (max ${last.ratio.toFixed(1)}) — extrapolated at ${last.ratio.toFixed(1)}` : '';
+    return {a0:last.a0, a1:last.a1, a2:last.a2, note};
+  }
+  for(let i=0;i<rows.length-1;i++){
+    const r0 = rows[i], r1 = rows[i+1];
+    if(ratio >= r0.ratio && ratio <= r1.ratio){
+      if(ratio === r0.ratio) return {a0:r0.a0, a1:r0.a1, a2:r0.a2, note:''};
+      const f = (ratio - r0.ratio) / (r1.ratio - r0.ratio);
+      const lerp = (x,y) => x + f*(y-x);
+      return {a0:lerp(r0.a0,r1.a0), a1:lerp(r0.a1,r1.a1), a2:lerp(r0.a2,r1.a2),
+              note:`interpolated between V1/V2 = ${r0.ratio.toFixed(1)} and ${r1.ratio.toFixed(1)}`};
+    }
+  }
+  return {a0:null, a1:null, a2:null, note:''};
+}
+
+/* =========================================================================
+   N_D,w unit handling — lets the user type the calibration factor exactly
+   as printed on the chamber's calibration certificate: a mantissa, a power-
+   of-ten exponent, and a unit (Gy/C, Gy/nC, cGy/nC or cGy/C). Internally
+   everything downstream (the output formula) is kept in cGy/nC to match
+   chamber readings entered in nC, so this converts once and writes the
+   result into the read-only N_D,w (auto) field.
+     Gy  -> cGy : x100
+     /C  -> /nC : x1e-9   (a coulomb is 1e9 nanocoulombs)
+   ========================================================================= */
+function computeNdwFor(sec){
+  const mant = num(`${sec}-mod-ndw-mant`);
+  const exp = num(`${sec}-mod-ndw-exp`) ?? 0;
+  const unitEl = document.getElementById(`${sec}-mod-ndw-unit`);
+  const unit = unitEl ? unitEl.value : 'cGynC';
+  const out = document.getElementById(`${sec}-mod-ndw`);
+  if(mant === null || isNaN(mant)){ if(out) out.value = '—'; return null; }
+  const doseFactor   = (unit === 'GyC' || unit === 'GynC') ? 100 : 1;    // Gy -> cGy
+  const chargeFactor = (unit === 'GyC' || unit === 'cGyC') ? 1e-9 : 1;   // per C -> per nC
+  const ndw = mant * Math.pow(10, exp) * doseFactor * chargeFactor;
+  if(out) out.value = `${ndw.toExponential(6)} cGy/nC`;
+  return ndw;
+}
+
+/* Meter-reading unit handling — readings can be entered directly in nC, or
+   as raw electrometer display units ("rdg") that need the electrometer
+   calibration factor k_elec (nC/rdg) to convert to charge: M[nC] = M[rdg] x k_elec.
+   Returns the conversion multiplier to apply to every raw MR1/MR2/MR3 average. */
+function readingConvFactor(sec){
+  const unitEl = document.getElementById(`${sec}-mod-readingunit`);
+  const unit = unitEl ? unitEl.value : 'nC';
+  if(unit !== 'rdg') return 1;
+  const kelec = num(`${sec}-mod-kelec`);
+  return (kelec === null || isNaN(kelec)) ? 1 : kelec;
+}
+
+
+// Tab switching — Absolute Output sub-group (Photon / Electron / TPR20,10)
+document.querySelectorAll('[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    document.body.setAttribute('data-active-panel', btn.dataset.tab);
+  });
+});
+document.body.setAttribute('data-active-panel', 'ph');
+
+// Tab switching — main level (Daily QA / Monthly QA / Annual QA)
+document.querySelectorAll('[data-maintab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-maintab]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mainview').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.maintab).classList.add('active');
+  });
+});
+
+// Tab switching — Monthly QA sub-level (Mechanical / Absolute Output / Imaging / MLC)
+document.querySelectorAll('[data-subtab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-subtab]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sub-' + btn.dataset.subtab).classList.add('active');
+  });
+});
+
+
+
+(function(){
+const ENERGIES_ph = ["6 MV", "6 FFF", "10 MV", "10 FFF", "15 MV"];
+const SECTION = "ph";
+const DEFAULTS_ph = {
+  "6mv": {kqqo: 0.9934, pdd: 66.4, meta: "Dmax 1.53 cm"},
+  "6fff": {kqqo: 0.9967, pdd: 63.63, meta: "Dmax 1.48 cm"},
+  "10mv": {kqqo: 0.9816, pdd: 73.7, meta: "Dmax 2.4 cm"},
+  "10fff": {kqqo: 0.9882, pdd: 71.26, meta: "Dmax 2.16 cm"},
+  "15mv": {kqqo: 0.9754, pdd: 76.6, meta: "Dmax 2.81 cm"}
+};
+
+function buildCard(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const d = DEFAULTS_ph[id];
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.energy = energy;
+  div.innerHTML = `
+    <div class="card-head">
+      <span class="energy">${energy}${d && d.meta ? ` <span class="meta">&middot; ${d.meta}</span>` : ''}</span>
+      <span class="status-badge" id="${prefix}-status">—</span>
+    </div>
+    <div class="row-inline">
+      <div class="field"><label>k<sub>Q,Qo</sub></label><input type="number" step="0.0001" id="${prefix}-kqqo" placeholder="e.g. 0.993" value="${d ? d.kqqo : ''}"></div>
+      <div class="field"><label>PDD / TPR (%)</label><input type="number" step="0.01" id="${prefix}-pdd" placeholder="e.g. 66.2" value="${d ? d.pdd : ''}"></div>
+      <div class="field"><label>Baseline (<span class="unit">cGy/MU</span>)</label><input type="number" step="0.0001" id="${prefix}-baseline" value="1"></div>
+    </div>
+    <div class="voltblocks">
+      <div class="vb">
+        <div class="vb-title">+V<sub>1</sub> <span id="${prefix}-vb1title">(300 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p1-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p1-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p1-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p1-avg">—</b></div>
+      </div>
+      <div class="vb">
+        <div class="vb-title">−V<sub>1</sub> <span id="${prefix}-vb2title">(300 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p2-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p2-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p2-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p2-avg">—</b></div>
+        <div class="kfac"><span class="lbl">k<sub>pol</sub></span><span id="${prefix}-kpol">—</span></div>
+      </div>
+      <div class="vb">
+        <div class="vb-title">V<sub>2</sub> <span id="${prefix}-vb3title">(150 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p3-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p3-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p3-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p3-avg">—</b></div>
+        <div class="kfac"><span class="lbl">k<sub>s</sub></span><span id="${prefix}-ksat">—</span></div>
+        <div class="ksnote" id="${prefix}-ksnote" style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.3;"></div>
+      </div>
+    </div>
+    <div class="result-strip">
+      <div class="result-box output"><div class="rl">Output <span class="unit">cGy/MU</span></div><div class="rv" id="${prefix}-output">—</div></div>
+      <div class="result-box var"><div class="rl">% Variation</div><div class="rv" id="${prefix}-varout">—</div></div>
+      <div class="result-box"><div class="rl">Tolerance</div><div class="rv" id="${prefix}-toldisp">±2%</div></div>
+    </div>
+    <div class="evidence-gallery" id="${prefix}-evidence"></div>
+  `;
+  EvidenceGallery.init(div.querySelector('.evidence-gallery'), prefix, `Photon Absolute Output — ${energy}`);
+  return div;
+}
+
+function buildSummaryRow(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const tr = document.createElement('tr');
+  tr.dataset.energy = energy;
+  tr.innerHTML = `
+    <td class="energycol">${energy}</td>
+    <td id="${prefix}-sum-kqqo">—</td>
+    <td id="${prefix}-sum-pdd">—</td>
+    <td id="${prefix}-sum-mavg">—</td>
+    <td id="${prefix}-sum-kpol">—</td>
+    <td id="${prefix}-sum-ksat">—</td>
+    <td id="${prefix}-sum-ktp">—</td>
+    <td id="${prefix}-sum-output">—</td>
+    <td id="${prefix}-sum-baseline">—</td>
+    <td id="${prefix}-sum-var">—</td>
+    <td id="${prefix}-sum-status">—</td>
+  `;
+  return tr;
+}
+
+function computeKTP(){
+  const T  = num('ph-mod-t');
+  const P  = num('ph-mod-p');
+  const T0 = 20, P0 = 1013.25;
+  const out = document.getElementById('ph-mod-ktp');
+  if(T === null || P === null || P === 0){ out.value = '—'; return null; }
+  const ktp = (P0/P) * ((273.2+T)/(273.2+T0));
+  out.value = ktp.toFixed(4);
+  return ktp;
+}
+
+function computeCard(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const ktp = computeKTP();
+  const ndw = computeNdwFor('ph');
+  const tolerance = num('ph-tolerance') ?? 2;
+
+  document.getElementById(`${prefix}-toldisp`).textContent = `±${tolerance}%`;
+
+  // Convert raw meter readings to nC if entered as raw electrometer "rdg" units
+  const readingConv = readingConvFactor('ph');
+  let p1 = avg3(num(`${prefix}-p1-1`), num(`${prefix}-p1-2`), num(`${prefix}-p1-3`));
+  let p2 = avg3(num(`${prefix}-p2-1`), num(`${prefix}-p2-2`), num(`${prefix}-p2-3`));
+  let p3 = avg3(num(`${prefix}-p3-1`), num(`${prefix}-p3-2`), num(`${prefix}-p3-3`));
+  if(p1 !== null) p1 = p1 * readingConv;
+  if(p2 !== null) p2 = p2 * readingConv;
+  if(p3 !== null) p3 = p3 * readingConv;
+
+  document.getElementById(`${prefix}-p1-avg`).textContent = p1 !== null ? p1.toFixed(4) + ' nC' : '—';
+  document.getElementById(`${prefix}-p2-avg`).textContent = p2 !== null ? p2.toFixed(4) + ' nC' : '—';
+  document.getElementById(`${prefix}-p3-avg`).textContent = p3 !== null ? p3.toFixed(4) + ' nC' : '—';
+
+  // Polarizing voltages V1 (normal) and V2 (reduced), typed once in the setup panel above —
+  // any pair is accepted (e.g. 300/150, 400/100, 350/120 ...).
+  const v1 = num('ph-mod-v1') ?? 300;
+  const v2 = num('ph-mod-v2') ?? 150;
+  const beamTypeEl = document.getElementById('ph-mod-beamtype');
+  const beamType = beamTypeEl ? beamTypeEl.value : 'pulsed';
+  let vratio = null;
+  if(v1 !== null && v2 !== null && v2 !== 0){ vratio = v1/v2; }
+  const vratioEl = document.getElementById('ph-mod-vratio');
+  if(vratioEl) vratioEl.value = vratio !== null ? vratio.toFixed(3) : '—';
+
+  const vb1t = document.getElementById(`${prefix}-vb1title`);
+  const vb2t = document.getElementById(`${prefix}-vb2title`);
+  const vb3t = document.getElementById(`${prefix}-vb3title`);
+  if(vb1t) vb1t.textContent = `(${v1} V)`;
+  if(vb2t) vb2t.textContent = `(${v1} V)`;
+  if(vb3t) vb3t.textContent = `(${v2} V)`;
+
+  // k_pol — TRS-398: kpol = (|M+| + |M-|) / (2M), M = reading at the routine (normal, V1) polarity
+  let kpol = null;
+  if(p1 !== null && p2 !== null && p1 !== 0){ kpol = (Math.abs(p1) + Math.abs(p2)) / (2*p1); }
+  document.getElementById(`${prefix}-kpol`).textContent = kpol !== null ? kpol.toFixed(4) : '—';
+
+  // k_s — TRS-398 Eq. (14), two-voltage method: coefficients a0,a1,a2 looked up / interpolated
+  // from Table 9 at the actual V1/V2 typed above, then ks = a0 + a1*(M1/M2) + a2*(M1/M2)^2
+  let ksat = null;
+  const ksnoteEl = document.getElementById(`${prefix}-ksnote`);
+  if(p1 !== null && p3 !== null && p3 !== 0 && vratio !== null){
+    const coeffs = getTable9Coeffs(vratio, beamType);
+    if(coeffs.a0 !== null){
+      const r = p1/p3;
+      ksat = coeffs.a0 + coeffs.a1*r + coeffs.a2*r*r;
+      if(ksnoteEl){
+        const beamLabel = beamType === 'scanned' ? 'pulsed–scanned' : 'pulsed';
+        ksnoteEl.textContent = `M1/M2=${r.toFixed(4)}, V1/V2=${vratio.toFixed(3)} (${beamLabel})${coeffs.note ? ' — ' + coeffs.note : ''}`;
+      }
+    }
+  } else if(ksnoteEl){
+    ksnoteEl.textContent = '';
+  }
+  document.getElementById(`${prefix}-ksat`).textContent = ksat !== null ? ksat.toFixed(4) : '—';
+
+  const kqqo = num(`${prefix}-kqqo`);
+  const pdd  = num(`${prefix}-pdd`);
+  const baseline = num(`${prefix}-baseline`);
+
+  const outEl = document.getElementById(`${prefix}-output`);
+  const varEl = document.getElementById(`${prefix}-varout`);
+  const statusEl = document.getElementById(`${prefix}-status`);
+
+  let output = null;
+  if(p1 !== null && ndw !== null && kpol !== null && ksat !== null && kqqo !== null && ktp !== null && pdd){
+    output = (p1 * ndw * kpol * ksat * kqqo * ktp) / pdd;
+  }
+  outEl.textContent = output !== null ? output.toFixed(4) : '—';
+
+  let variation = null;
+  let statusText = '—';
+  varEl.classList.remove('pass','fail');
+  statusEl.classList.remove('pass','fail');
+  if(output !== null && baseline){
+    variation = Math.abs((output - baseline) * 100 / baseline);
+    varEl.textContent = variation.toFixed(3) + '%';
+    if(variation <= tolerance){
+      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent = 'PASS'; statusText = 'PASS';
+    } else {
+      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent = 'FAIL'; statusText = 'FAIL';
+    }
+  } else {
+    varEl.textContent = '—'; statusEl.textContent = '—';
+  }
+
+  setTxt(`${prefix}-sum-kqqo`, kqqo, 4);
+  setTxt(`${prefix}-sum-pdd`, pdd, 2);
+  setTxt(`${prefix}-sum-mavg`, p1, 4);
+  setTxt(`${prefix}-sum-kpol`, kpol, 4);
+  setTxt(`${prefix}-sum-ksat`, ksat, 4);
+  setTxt(`${prefix}-sum-ktp`, ktp, 4);
+  setTxt(`${prefix}-sum-output`, output, 4);
+  setTxt(`${prefix}-sum-baseline`, baseline, 4);
+  const sumVarEl = document.getElementById(`${prefix}-sum-var`);
+  const sumStatusEl = document.getElementById(`${prefix}-sum-status`);
+  sumVarEl.textContent = variation !== null ? variation.toFixed(3) + '%' : '—';
+  sumStatusEl.textContent = statusText;
+  sumVarEl.classList.remove('pass','fail');
+  sumStatusEl.classList.remove('pass','fail');
+  if(statusText === 'PASS'){ sumVarEl.classList.add('pass'); sumStatusEl.classList.add('pass'); }
+  if(statusText === 'FAIL'){ sumVarEl.classList.add('fail'); sumStatusEl.classList.add('fail'); }
+}
+
+function computeAll(){ ENERGIES_ph.forEach(e => computeCard(e)); }
+
+function init(){
+  const cardsContainer = document.getElementById('ph-mod-cards');
+  const summaryBody = document.querySelector('#ph-summary-table tbody');
+  ENERGIES_ph.forEach(e => {
+    cardsContainer.appendChild(buildCard(e));
+    summaryBody.appendChild(buildSummaryRow(e));
+  });
+
+  document.getElementById('panel-ph').addEventListener('input', (ev) => {
+    if(ev.target.id === 'ph-tolerance'){ computeAll(); return; }
+    const card = ev.target.closest('.card');
+    if(card){ computeCard(card.dataset.energy); return; }
+    const setup = ev.target.closest('.setup');
+    if(setup){ computeAll(); }
+  });
+
+  document.getElementById('ph-printBtn').addEventListener('click', () => window.print());
+
+  document.getElementById('ph-resetBtn').addEventListener('click', () => {
+    if(!confirm('Clear all entered readings? Setup fields (chamber, ND,w, etc.) will be kept.')) return;
+    document.querySelectorAll('#panel-ph .card input[type=number]').forEach(inp => {
+      if(inp.id.endsWith('-baseline')) inp.value = '1';
+      else inp.value = '';
+    });
+    computeAll();
+  });
+
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('ph-qaDate').value = today;
+
+  computeAll();
+}
+
+init();
+})();
+
+
+
+(function(){
+const ENERGIES_el = ["6 MeV", "9 MeV", "12 MeV", "15 MeV", "18 MeV"];
+const SECTION = "el";
+const DEFAULTS_el = {
+  "6mev": {kqqo: 0.935, pdd: 99.95, zref: 1.442, r50: 2.56},
+  "9mev": {kqqo: 0.922, pdd: 99.94, zref: 2.104, r50: 3.67},
+  "12mev": {kqqo: 0.911, pdd: 99.98, zref: 2.996, r50: 5.15},
+  "15mev": {kqqo: 0.904, pdd: 99.68, zref: 3.791, r50: 6.48},
+  "18mev": {kqqo: 0.898, pdd: 98.34, zref: 4.524, r50: 7.7}
+};
+
+function buildCard(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const d = DEFAULTS_el[id];
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.energy = energy;
+  div.innerHTML = `
+    <div class="card-head">
+      <span class="energy">${energy}</span>
+      <span class="status-badge" id="${prefix}-status">—</span>
+    </div>
+    <div class="row-inline">
+      <div class="field"><label>R<sub>50</sub> (<span class="unit">g/cm&sup2;</span>)</label><input type="number" step="0.01" id="${prefix}-r50" placeholder="e.g. 2.56" value="${d ? d.r50 : ''}"></div>
+      <div class="field"><label>z<sub>ref</sub> (<span class="unit">g/cm&sup2;</span>)</label><input type="number" step="0.001" id="${prefix}-zref" placeholder="e.g. 1.442" value="${d ? d.zref : ''}"></div>
+    </div>
+    <div class="row-inline">
+      <div class="field"><label>k<sub>Q,Qo</sub></label><input type="number" step="0.0001" id="${prefix}-kqqo" placeholder="e.g. 0.993" value="${d ? d.kqqo : ''}"></div>
+      <div class="field"><label>PDD / TPR (%)</label><input type="number" step="0.01" id="${prefix}-pdd" placeholder="e.g. 66.2" value="${d ? d.pdd : ''}"></div>
+      <div class="field"><label>Baseline (<span class="unit">cGy/MU</span>)</label><input type="number" step="0.0001" id="${prefix}-baseline" value="1"></div>
+    </div>
+    <div class="voltblocks">
+      <div class="vb">
+        <div class="vb-title">+V<sub>1</sub> <span id="${prefix}-vb1title">(300 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p1-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p1-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p1-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p1-avg">—</b></div>
+      </div>
+      <div class="vb">
+        <div class="vb-title">−V<sub>1</sub> <span id="${prefix}-vb2title">(300 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p2-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p2-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p2-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p2-avg">—</b></div>
+        <div class="kfac"><span class="lbl">k<sub>pol</sub></span><span id="${prefix}-kpol">—</span></div>
+      </div>
+      <div class="vb">
+        <div class="vb-title">V<sub>2</sub> <span id="${prefix}-vb3title">(150 V)</span></div>
+        <input type="number" step="0.001" id="${prefix}-p3-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-p3-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-p3-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-p3-avg">—</b></div>
+        <div class="kfac"><span class="lbl">k<sub>s</sub></span><span id="${prefix}-ksat">—</span></div>
+        <div class="ksnote" id="${prefix}-ksnote" style="font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.3;"></div>
+      </div>
+    </div>
+    <div class="result-strip">
+      <div class="result-box output"><div class="rl">Output <span class="unit">cGy/MU</span></div><div class="rv" id="${prefix}-output">—</div></div>
+      <div class="result-box var"><div class="rl">% Variation</div><div class="rv" id="${prefix}-varout">—</div></div>
+      <div class="result-box"><div class="rl">Tolerance</div><div class="rv" id="${prefix}-toldisp">±2%</div></div>
+    </div>
+    <div class="evidence-gallery" id="${prefix}-evidence"></div>
+  `;
+  EvidenceGallery.init(div.querySelector('.evidence-gallery'), prefix, `Electron Absolute Output — ${energy}`);
+  return div;
+}
+
+function buildSummaryRow(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const tr = document.createElement('tr');
+  tr.dataset.energy = energy;
+  tr.innerHTML = `
+    <td class="energycol">${energy}</td>
+    <td id="${prefix}-sum-r50">—</td>
+    <td id="${prefix}-sum-zref">—</td>
+    <td id="${prefix}-sum-kqqo">—</td>
+    <td id="${prefix}-sum-pdd">—</td>
+    <td id="${prefix}-sum-mavg">—</td>
+    <td id="${prefix}-sum-kpol">—</td>
+    <td id="${prefix}-sum-ksat">—</td>
+    <td id="${prefix}-sum-ktp">—</td>
+    <td id="${prefix}-sum-output">—</td>
+    <td id="${prefix}-sum-baseline">—</td>
+    <td id="${prefix}-sum-var">—</td>
+    <td id="${prefix}-sum-status">—</td>
+  `;
+  return tr;
+}
+
+function computeKTP(){
+  const T  = num('el-mod-t');
+  const P  = num('el-mod-p');
+  const T0 = 20, P0 = 1013.25;
+  const out = document.getElementById('el-mod-ktp');
+  if(T === null || P === null || P === 0){ out.value = '—'; return null; }
+  const ktp = (P0/P) * ((273.2+T)/(273.2+T0));
+  out.value = ktp.toFixed(4);
+  return ktp;
+}
+
+function computeCard(energy){
+  const id = slug(energy);
+  const prefix = `${SECTION}-${id}`;
+  const ktp = computeKTP();
+  const ndw = computeNdwFor('el');
+  const tolerance = num('el-tolerance') ?? 2;
+
+  document.getElementById(`${prefix}-toldisp`).textContent = `±${tolerance}%`;
+
+  // Convert raw meter readings to nC if entered as raw electrometer "rdg" units
+  const readingConv = readingConvFactor('el');
+  let p1 = avg3(num(`${prefix}-p1-1`), num(`${prefix}-p1-2`), num(`${prefix}-p1-3`));
+  let p2 = avg3(num(`${prefix}-p2-1`), num(`${prefix}-p2-2`), num(`${prefix}-p2-3`));
+  let p3 = avg3(num(`${prefix}-p3-1`), num(`${prefix}-p3-2`), num(`${prefix}-p3-3`));
+  if(p1 !== null) p1 = p1 * readingConv;
+  if(p2 !== null) p2 = p2 * readingConv;
+  if(p3 !== null) p3 = p3 * readingConv;
+
+  document.getElementById(`${prefix}-p1-avg`).textContent = p1 !== null ? p1.toFixed(4) + ' nC' : '—';
+  document.getElementById(`${prefix}-p2-avg`).textContent = p2 !== null ? p2.toFixed(4) + ' nC' : '—';
+  document.getElementById(`${prefix}-p3-avg`).textContent = p3 !== null ? p3.toFixed(4) + ' nC' : '—';
+
+  // Polarizing voltages V1 (normal) and V2 (reduced), typed once in the setup panel above —
+  // any pair is accepted (e.g. 300/150, 400/100, 350/120 ...).
+  const v1 = num('el-mod-v1') ?? 300;
+  const v2 = num('el-mod-v2') ?? 150;
+  const beamTypeEl = document.getElementById('el-mod-beamtype');
+  const beamType = beamTypeEl ? beamTypeEl.value : 'pulsed';
+  let vratio = null;
+  if(v1 !== null && v2 !== null && v2 !== 0){ vratio = v1/v2; }
+  const vratioEl = document.getElementById('el-mod-vratio');
+  if(vratioEl) vratioEl.value = vratio !== null ? vratio.toFixed(3) : '—';
+
+  const vb1t = document.getElementById(`${prefix}-vb1title`);
+  const vb2t = document.getElementById(`${prefix}-vb2title`);
+  const vb3t = document.getElementById(`${prefix}-vb3title`);
+  if(vb1t) vb1t.textContent = `(${v1} V)`;
+  if(vb2t) vb2t.textContent = `(${v1} V)`;
+  if(vb3t) vb3t.textContent = `(${v2} V)`;
+
+  // k_pol — TRS-398: kpol = (|M+| + |M-|) / (2M), M = reading at the routine (normal, V1) polarity
+  let kpol = null;
+  if(p1 !== null && p2 !== null && p1 !== 0){ kpol = (Math.abs(p1) + Math.abs(p2)) / (2*p1); }
+  document.getElementById(`${prefix}-kpol`).textContent = kpol !== null ? kpol.toFixed(4) : '—';
+
+  // k_s — TRS-398 Eq. (14), two-voltage method: coefficients a0,a1,a2 looked up / interpolated
+  // from Table 9 at the actual V1/V2 typed above, then ks = a0 + a1*(M1/M2) + a2*(M1/M2)^2
+  let ksat = null;
+  const ksnoteEl = document.getElementById(`${prefix}-ksnote`);
+  if(p1 !== null && p3 !== null && p3 !== 0 && vratio !== null){
+    const coeffs = getTable9Coeffs(vratio, beamType);
+    if(coeffs.a0 !== null){
+      const r = p1/p3;
+      ksat = coeffs.a0 + coeffs.a1*r + coeffs.a2*r*r;
+      if(ksnoteEl){
+        const beamLabel = beamType === 'scanned' ? 'pulsed–scanned' : 'pulsed';
+        ksnoteEl.textContent = `M1/M2=${r.toFixed(4)}, V1/V2=${vratio.toFixed(3)} (${beamLabel})${coeffs.note ? ' — ' + coeffs.note : ''}`;
+      }
+    }
+  } else if(ksnoteEl){
+    ksnoteEl.textContent = '';
+  }
+  document.getElementById(`${prefix}-ksat`).textContent = ksat !== null ? ksat.toFixed(4) : '—';
+
+  const kqqo = num(`${prefix}-kqqo`);
+  const pdd  = num(`${prefix}-pdd`);
+  const baseline = num(`${prefix}-baseline`);
+  const r50 = num(`${prefix}-r50`);
+  const zref = num(`${prefix}-zref`);
+
+  const outEl = document.getElementById(`${prefix}-output`);
+  const varEl = document.getElementById(`${prefix}-varout`);
+  const statusEl = document.getElementById(`${prefix}-status`);
+
+  let output = null;
+  if(p1 !== null && ndw !== null && kpol !== null && ksat !== null && kqqo !== null && ktp !== null && pdd){
+    output = (p1 * ndw * kpol * ksat * kqqo * ktp) / pdd;
+  }
+  outEl.textContent = output !== null ? output.toFixed(4) : '—';
+
+  let variation = null;
+  let statusText = '—';
+  varEl.classList.remove('pass','fail');
+  statusEl.classList.remove('pass','fail');
+  if(output !== null && baseline){
+    variation = Math.abs((output - baseline) * 100 / baseline);
+    varEl.textContent = variation.toFixed(3) + '%';
+    if(variation <= tolerance){
+      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent = 'PASS'; statusText = 'PASS';
+    } else {
+      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent = 'FAIL'; statusText = 'FAIL';
+    }
+  } else {
+    varEl.textContent = '—'; statusEl.textContent = '—';
+  }
+
+  setTxt(`${prefix}-sum-r50`, r50, 2);
+  setTxt(`${prefix}-sum-zref`, zref, 3);
+  setTxt(`${prefix}-sum-kqqo`, kqqo, 4);
+  setTxt(`${prefix}-sum-pdd`, pdd, 2);
+  setTxt(`${prefix}-sum-mavg`, p1, 4);
+  setTxt(`${prefix}-sum-kpol`, kpol, 4);
+  setTxt(`${prefix}-sum-ksat`, ksat, 4);
+  setTxt(`${prefix}-sum-ktp`, ktp, 4);
+  setTxt(`${prefix}-sum-output`, output, 4);
+  setTxt(`${prefix}-sum-baseline`, baseline, 4);
+  const sumVarEl = document.getElementById(`${prefix}-sum-var`);
+  const sumStatusEl = document.getElementById(`${prefix}-sum-status`);
+  sumVarEl.textContent = variation !== null ? variation.toFixed(3) + '%' : '—';
+  sumStatusEl.textContent = statusText;
+  sumVarEl.classList.remove('pass','fail');
+  sumStatusEl.classList.remove('pass','fail');
+  if(statusText === 'PASS'){ sumVarEl.classList.add('pass'); sumStatusEl.classList.add('pass'); }
+  if(statusText === 'FAIL'){ sumVarEl.classList.add('fail'); sumStatusEl.classList.add('fail'); }
+}
+
+function computeAll(){ ENERGIES_el.forEach(e => computeCard(e)); }
+
+// Auto-fill z_ref = 0.6*R50 - 0.1 g/cm² (TRS-398 formula) when R50 changes and z_ref hasn't been
+// manually overridden by the user for that card.
+function wireR50Autofill(){
+  document.getElementById('panel-el').addEventListener('input', (ev) => {
+    if(!ev.target.id.endsWith('-r50')) return;
+    const zrefInput = document.getElementById(ev.target.id.replace('-r50','-zref'));
+    if(!zrefInput || zrefInput.dataset.userEdited === '1') return;
+    const r50v = parseFloat(ev.target.value);
+    if(!isNaN(r50v)){ zrefInput.value = (0.6*r50v - 0.1).toFixed(3); }
+  });
+  document.getElementById('panel-el').addEventListener('input', (ev) => {
+    if(ev.target.id.endsWith('-zref')){ ev.target.dataset.userEdited = '1'; }
+  });
+}
+
+function init(){
+  const cardsContainer = document.getElementById('el-mod-cards');
+  const summaryBody = document.querySelector('#el-summary-table tbody');
+  ENERGIES_el.forEach(e => {
+    cardsContainer.appendChild(buildCard(e));
+    summaryBody.appendChild(buildSummaryRow(e));
+  });
+
+  document.getElementById('panel-el').addEventListener('input', (ev) => {
+    if(ev.target.id === 'el-tolerance'){ computeAll(); return; }
+    const card = ev.target.closest('.card');
+    if(card){ computeCard(card.dataset.energy); return; }
+    const setup = ev.target.closest('.setup');
+    if(setup){ computeAll(); }
+  });
+
+  document.getElementById('el-printBtn').addEventListener('click', () => window.print());
+
+  document.getElementById('el-resetBtn').addEventListener('click', () => {
+    if(!confirm('Clear all entered readings? Setup fields (chamber, ND,w, etc.) will be kept.')) return;
+    document.querySelectorAll('#panel-el .card input[type=number]').forEach(inp => {
+      if(inp.id.endsWith('-baseline')) inp.value = '1';
+      else inp.value = '';
+    });
+    computeAll();
+  });
+
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('el-qaDate').value = today;
+
+  wireR50Autofill();
+  computeAll();
+}
+
+init();
+})();
+
+
+
+(function(){
+const ENERGIES_tpr = ["6 MV", "6 FFF", "10 MV", "10 FFF", "15 MV"];
+const TPR_POINTS = [0.5, 0.53, 0.56, 0.59, 0.62, 0.65, 0.68, 0.7, 0.72, 0.74, 0.76, 0.78, 0.8, 0.82, 0.84];
+const CHAMBERS = {
+  "PTW 30013 / 30010 Farmer": [1.004, 1.003, 1.001, 0.999, 0.997, 0.994, 0.99, 0.988, 0.985, 0.981, 0.976, 0.969, 0.962, 0.955, 0.943],
+  "NE 2571 Farmer": [1.005, 1.004, 1.002, 1.0, 0.998, 0.995, 0.993, 0.991, 0.989, 0.986, 0.982, 0.975, 0.969, 0.961, 0.949],
+  "Exradin A12 Farmer": [1.001, 1.001, 1.0, 1.0, 0.999, 0.997, 0.994, 0.992, 0.99, 0.986, 0.981, 0.974, 0.966, 0.957, 0.944],
+  "NE 2561 / 2611 Sec.Std": [1.006, 1.004, 1.001, 0.999, 0.998, 0.994, 0.992, 0.99, 0.988, 0.985, 0.982, 0.975, 0.969, 0.961, 0.949]
+};
+
+function interpKQ(tpr, arr){
+  if(tpr === null) return null;
+  if(tpr <= TPR_POINTS[0]) return arr[0];
+  if(tpr >= TPR_POINTS[TPR_POINTS.length-1]) return arr[arr.length-1];
+  for(let i=0;i<TPR_POINTS.length-1;i++){
+    const x0=TPR_POINTS[i], x1=TPR_POINTS[i+1];
+    if(tpr>=x0 && tpr<=x1){
+      const y0=arr[i], y1=arr[i+1];
+      return y0 + (y1-y0)*((tpr-x0)/(x1-x0));
+    }
+  }
+  return null;
+}
+
+function buildCard(energy){
+  const id = slug(energy);
+  const prefix = `tpr-${id}`;
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.energy = energy;
+  div.innerHTML = `
+    <div class="card-head">
+      <span class="energy">${energy}</span>
+      <span class="status-badge" id="${prefix}-status">—</span>
+    </div>
+    <div class="row-inline">
+      <div class="field"><label>Baseline TPR<sub>20,10</sub></label><input type="number" step="0.0001" id="${prefix}-baseline" placeholder="e.g. 0.760"></div>
+    </div>
+    <div class="voltblocks two">
+      <div class="vb">
+        <div class="vb-title">M (20 g/cm²)</div>
+        <input type="number" step="0.001" id="${prefix}-m20-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-m20-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-m20-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-m20-avg">—</b></div>
+      </div>
+      <div class="vb">
+        <div class="vb-title">M (10 g/cm²)</div>
+        <input type="number" step="0.001" id="${prefix}-m10-1" placeholder="MR1">
+        <input type="number" step="0.001" id="${prefix}-m10-2" placeholder="MR2">
+        <input type="number" step="0.001" id="${prefix}-m10-3" placeholder="MR3">
+        <div class="avg">avg <b id="${prefix}-m10-avg">—</b></div>
+      </div>
+    </div>
+    <div class="result-strip">
+      <div class="result-box output"><div class="rl">TPR<sub>20,10</sub></div><div class="rv" id="${prefix}-tpr">—</div></div>
+      <div class="result-box var"><div class="rl">% Drift vs Baseline</div><div class="rv" id="${prefix}-var">—</div></div>
+      <div class="result-box"><div class="rl">k<sub>Q,Qo</sub> (selected chamber)</div><div class="rv" id="${prefix}-kq">—</div></div>
+    </div>
+    <div class="evidence-gallery" id="${prefix}-evidence"></div>
+  `;
+  EvidenceGallery.init(div.querySelector('.evidence-gallery'), prefix, `TPR20,10 — ${energy}`);
+  return div;
+}
+
+function buildSummaryRow(energy){
+  const id = slug(energy);
+  const prefix = `tpr-${id}`;
+  const tr = document.createElement('tr');
+  tr.dataset.energy = energy;
+  tr.innerHTML = `
+    <td class="energycol">${energy}</td>
+    <td id="${prefix}-sum-m20">—</td>
+    <td id="${prefix}-sum-m10">—</td>
+    <td id="${prefix}-sum-tpr">—</td>
+    <td id="${prefix}-sum-baseline">—</td>
+    <td id="${prefix}-sum-var">—</td>
+    <td id="${prefix}-sum-kq">—</td>
+    <td id="${prefix}-sum-status">—</td>
+  `;
+  return tr;
+}
+
+function computeCard(energy){
+  const id = slug(energy);
+  const prefix = `tpr-${id}`;
+  const tolerance = num('tpr-tolerance') ?? 1;
+  const chamberSel = document.getElementById('tpr-chamber').value;
+  const chamberArr = CHAMBERS[chamberSel];
+
+  const m20 = avg3(num(`${prefix}-m20-1`), num(`${prefix}-m20-2`), num(`${prefix}-m20-3`));
+  const m10 = avg3(num(`${prefix}-m10-1`), num(`${prefix}-m10-2`), num(`${prefix}-m10-3`));
+  document.getElementById(`${prefix}-m20-avg`).textContent = m20 !== null ? m20.toFixed(4) : '—';
+  document.getElementById(`${prefix}-m10-avg`).textContent = m10 !== null ? m10.toFixed(4) : '—';
+
+  let tpr = null;
+  if(m20 !== null && m10 !== null && m10 !== 0){ tpr = m20/m10; }
+  document.getElementById(`${prefix}-tpr`).textContent = tpr !== null ? tpr.toFixed(4) : '—';
+
+  const kq = interpKQ(tpr, chamberArr);
+  document.getElementById(`${prefix}-kq`).textContent = kq !== null ? kq.toFixed(4) : '—';
+
+  const baseline = num(`${prefix}-baseline`);
+  const varEl = document.getElementById(`${prefix}-var`);
+  const statusEl = document.getElementById(`${prefix}-status`);
+  varEl.classList.remove('pass','fail'); statusEl.classList.remove('pass','fail');
+  let variation = null, statusText = '—';
+  if(tpr !== null && baseline){
+    variation = Math.abs((tpr-baseline)*100/baseline);
+    varEl.textContent = variation.toFixed(3) + '%';
+    if(variation <= tolerance){
+      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent='PASS'; statusText='PASS';
+    } else {
+      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent='FAIL'; statusText='FAIL';
+    }
+  } else {
+    varEl.textContent = '—'; statusEl.textContent = '—';
+  }
+
+  setTxt(`${prefix}-sum-m20`, m20, 4);
+  setTxt(`${prefix}-sum-m10`, m10, 4);
+  setTxt(`${prefix}-sum-tpr`, tpr, 4);
+  setTxt(`${prefix}-sum-baseline`, baseline, 4);
+  setTxt(`${prefix}-sum-kq`, kq, 4);
+  const sv = document.getElementById(`${prefix}-sum-var`);
+  const ss = document.getElementById(`${prefix}-sum-status`);
+  sv.textContent = variation !== null ? variation.toFixed(3)+'%' : '—';
+  ss.textContent = statusText;
+  sv.classList.remove('pass','fail'); ss.classList.remove('pass','fail');
+  if(statusText==='PASS'){ sv.classList.add('pass'); ss.classList.add('pass'); }
+  if(statusText==='FAIL'){ sv.classList.add('fail'); ss.classList.add('fail'); }
+}
+
+function computeAll(){ ENERGIES_tpr.forEach(e => computeCard(e)); }
+
+function init(){
+  const cardsContainer = document.getElementById('tpr-mod-cards');
+  const summaryBody = document.querySelector('#tpr-summary-table tbody');
+  const chamberSel = document.getElementById('tpr-chamber');
+  Object.keys(CHAMBERS).forEach(name => {
+    const opt = document.createElement('option'); opt.value = name; opt.textContent = name;
+    chamberSel.appendChild(opt);
+  });
+  ENERGIES_tpr.forEach(e => {
+    cardsContainer.appendChild(buildCard(e));
+    summaryBody.appendChild(buildSummaryRow(e));
+  });
+
+  document.getElementById('panel-tpr').addEventListener('input', (ev) => {
+    if(ev.target.id === 'tpr-tolerance'){ computeAll(); return; }
+    computeAll();
+  });
+  document.getElementById('panel-tpr').addEventListener('change', (ev) => {
+    if(ev.target.id === 'tpr-chamber'){ computeAll(); }
+  });
+
+  document.getElementById('tpr-printBtn').addEventListener('click', () => window.print());
+  document.getElementById('tpr-resetBtn').addEventListener('click', () => {
+    if(!confirm('Clear all entered readings? Setup fields will be kept.')) return;
+    document.querySelectorAll('#panel-tpr .card input[type=number]').forEach(inp => {
+      if(!inp.id.endsWith('-baseline')) inp.value = '';
+    });
+    computeAll();
+  });
+
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('tpr-qaDate').value = today;
+
+  computeAll();
+}
+
+init();
+})();
+
+
+/* =========================================================================
+   BACKUP / RESTORE — collects every filled field across all three tabs
+   (Photon, Electron, TPR) into a single JSON file. Use "Share / Save to
+   Drive" on Android/Chrome to hand the file straight to the Google Drive
+   app's share target; use "Save backup" for a plain file download. A
+   silent copy is also kept in this browser's local storage as a safety
+   net in case the tab is closed before a manual backup is taken.
+   ========================================================================= */
+(function(){
+  const AUTOSAVE_KEY = 'pgimer_trueBeam_qa_autosave_v1';
+  const HISTORY_KEY = 'pgimer_trueBeam_qa_local_history_v1';
+  const HISTORY_MAX = 20;
+  const DRIVE_CLIENT_ID_KEY = 'pgimer_qa_drive_client_id';
+  const DRIVE_CONNECTED_KEY = 'pgimer_qa_drive_connected';
+  const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+  const DRIVE_FOLDER_NAME = 'PGIMER TrueBeam QA Backups';
+  const DRIVE_AUTOSAVE_NAME = 'PGIMER_TrueBeam_QA_AUTOSAVE.json';
+
+  // ================= Mechanical QA: dynamic section builders =================
+  function markPF(cellId, pass){
+    const el = document.getElementById(cellId);
+    if(!el) return;
+    el.innerHTML = '<span class="pf ' + (pass ? 'pass' : 'fail') + '">' + (pass ? 'PASS' : 'FAIL') + '</span>';
+  }
+  function wireAbsTol(inputId, cellId, tolOverride){
+    const inp = document.getElementById(inputId);
+    if(!inp) return;
+    const tol = tolOverride !== undefined ? tolOverride : parseFloat(inp.dataset.tol);
+    function ev(){
+      const v = parseFloat(inp.value);
+      markPF(cellId, !isNaN(v) && Math.abs(v) <= tol + 1e-9);
+    }
+    inp.addEventListener('input', ev);
+    ev();
+  }
+
+  const s4rows = [
+    {mdi:110, m:-10.3, o:-10.31}, {mdi:105, m:-5.36, o:-5.38}, {mdi:100, m:-0.38, o:-0.35},
+    {mdi:95, m:4.66, o:4.59}, {mdi:90, m:9.55, o:9.64}, {mdi:85, m:14.62, o:14.53}, {mdi:80, m:19.62, o:19.49}
+  ];
+  (function buildS4(){
+    const tb = document.getElementById('s4-body');
+    if(!tb) return;
+    s4rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.mdi} cm</td>
+        <td><input type="number" step="0.01" id="s4-m-${i}" value="${r.m}"></td>
+        <td><input type="number" step="0.01" id="s4-o-${i}" value="${r.o}"></td>
+        <td id="s4-var-${i}" class="tolcell"></td>
+        <td class="tolcell">± 2 mm</td>
+        <td id="s4-pf-${i}"></td>`;
+      tb.appendChild(tr);
+    });
+    s4rows.forEach((r,i) => {
+      function recalc(){
+        const m = parseFloat(document.getElementById('s4-m-'+i).value);
+        const o = parseFloat(document.getElementById('s4-o-'+i).value);
+        const v = Math.abs(m-o);
+        document.getElementById('s4-var-'+i).textContent = isNaN(v) ? '' : v.toFixed(2) + ' mm';
+        markPF('s4-pf-'+i, !isNaN(v) && v <= 2);
+      }
+      document.getElementById('s4-m-'+i).addEventListener('input', recalc);
+      document.getElementById('s4-o-'+i).addEventListener('input', recalc);
+      recalc();
+    });
+  })();
+
+  const s5rows = [
+    {fs:3, x1:1.5, x2:1.5, y1:1.6, y2:1.6}, {fs:5, x1:2.6, x2:2.5, y1:2.5, y2:2.5},
+    {fs:10, x1:5, x2:4.9, y1:5.1, y2:5}, {fs:15, x1:7.6, x2:7.5, y1:7.6, y2:7.5},
+    {fs:20, x1:10, x2:10, y1:10.1, y2:10}, {fs:25, x1:12.6, x2:12.6, y1:12.6, y2:12.5},
+    {fs:30, x1:15, x2:15, y1:15, y2:15}, {fs:35, x1:17.6, x2:17.5, y1:17.6, y2:17.5},
+    {fs:40, x1:20.1, x2:20, y1:20, y2:20}
+  ];
+  (function buildS5(){
+    const tb = document.getElementById('s5-body');
+    if(!tb) return;
+    s5rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.fs} × ${r.fs} cm</td>
+        <td><input type="number" step="0.1" class="narrow" id="s5-x1-${i}" value="${r.x1}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s5-x2-${i}" value="${r.x2}"></td>
+        <td id="s5-x-${i}" class="tolcell"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s5-y1-${i}" value="${r.y1}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s5-y2-${i}" value="${r.y2}"></td>
+        <td id="s5-y-${i}" class="tolcell"></td>
+        <td id="s5-dx-${i}" class="tolcell"></td>
+        <td id="s5-dy-${i}" class="tolcell"></td>
+        <td id="s5-pf-${i}"></td>`;
+      tb.appendChild(tr);
+    });
+    s5rows.forEach((r,i) => {
+      const tol = Math.min(r.fs * 0.1, 2);
+      function recalc(){
+        const x1 = parseFloat(document.getElementById('s5-x1-'+i).value)||0;
+        const x2 = parseFloat(document.getElementById('s5-x2-'+i).value)||0;
+        const y1 = parseFloat(document.getElementById('s5-y1-'+i).value)||0;
+        const y2 = parseFloat(document.getElementById('s5-y2-'+i).value)||0;
+        const X = x1+x2, Y = y1+y2, dX = X - r.fs, dY = Y - r.fs;
+        document.getElementById('s5-x-'+i).textContent = X.toFixed(1);
+        document.getElementById('s5-y-'+i).textContent = Y.toFixed(1);
+        document.getElementById('s5-dx-'+i).textContent = dX.toFixed(1);
+        document.getElementById('s5-dy-'+i).textContent = dY.toFixed(1);
+        markPF('s5-pf-'+i, Math.abs(dX) <= tol + 1e-9 && Math.abs(dY) <= tol + 1e-9);
+      }
+      ['x1','x2','y1','y2'].forEach(k => document.getElementById('s5-'+k+'-'+i).addEventListener('input', recalc));
+      recalc();
+    });
+  })();
+
+  const s6rows = [
+    {a:5, b:10, x1:5, x2:10, y1:4.9, y2:10},
+    {a:10, b:5, x1:10, x2:5.1, y1:10.1, y2:5},
+    {a:5, b:20, x1:5.1, x2:20, y1:5, y2:20},
+    {a:15, b:2.5, x1:15, x2:2.5, y1:15.1, y2:2.5},
+    {a:2, b:5, x1:2.1, x2:5, y1:2.1, y2:5.1}
+  ];
+  (function buildS6(){
+    const tb = document.getElementById('s6-body');
+    if(!tb) return;
+    s6rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.a}</td><td>${r.b}</td>
+        <td><input type="number" step="0.1" class="narrow" id="s6-x1-${i}" value="${r.x1}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s6-x2-${i}" value="${r.x2}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s6-y1-${i}" value="${r.y1}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="s6-y2-${i}" value="${r.y2}"></td>
+        <td id="s6-vx1-${i}" class="tolcell"></td>
+        <td id="s6-vx2-${i}" class="tolcell"></td>
+        <td id="s6-vy1-${i}" class="tolcell"></td>
+        <td id="s6-vy2-${i}" class="tolcell"></td>
+        <td id="s6-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      const fs = r.a + r.b;
+      const tolerance = Math.min(fs * 0.1, 2);
+      function recalc(){
+        const x1 = parseFloat(document.getElementById('s6-x1-'+i).value)||0;
+        const x2 = parseFloat(document.getElementById('s6-x2-'+i).value)||0;
+        const y1 = parseFloat(document.getElementById('s6-y1-'+i).value)||0;
+        const y2 = parseFloat(document.getElementById('s6-y2-'+i).value)||0;
+        const vx1 = x1 - r.a, vx2 = x2 - r.b, vy1 = y1 - r.a, vy2 = y2 - r.b;
+        document.getElementById('s6-vx1-'+i).textContent = vx1.toFixed(1);
+        document.getElementById('s6-vx2-'+i).textContent = vx2.toFixed(1);
+        document.getElementById('s6-vy1-'+i).textContent = vy1.toFixed(1);
+        document.getElementById('s6-vy2-'+i).textContent = vy2.toFixed(1);
+        const ok = [vx1,vx2,vy1,vy2].every(v => Math.abs(v) <= tolerance + 1e-9);
+        markPF('s6-pf-'+i, ok);
+      }
+      ['x1','x2','y1','y2'].forEach(k => document.getElementById('s6-'+k+'-'+i).addEventListener('input', recalc));
+      recalc();
+    });
+  })();
+
+  const s7rows = [{jaw:'X1', m0:0, m10:10}, {jaw:'X2', m0:0, m10:10}, {jaw:'Y1', m0:0, m10:10}, {jaw:'Y2', m0:0, m10:10}];
+  (function buildS7(){
+    const tb = document.getElementById('s7-body');
+    if(!tb) return;
+    s7rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.jaw}</td><td class="tolcell">0.0 / 10.0 cm</td>
+        <td><input type="number" step="0.1" id="s7-m0-${i}" value="${r.m0}"></td>
+        <td><input type="number" step="0.1" id="s7-m10-${i}" value="${r.m10}"></td>
+        <td id="s7-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const v0 = parseFloat(document.getElementById('s7-m0-'+i).value);
+        const v10 = parseFloat(document.getElementById('s7-m10-'+i).value);
+        const dev0 = Math.abs(v0 - 0), dev10 = Math.abs(v10 - 10);
+        markPF('s7-pf-'+i, !isNaN(v0) && !isNaN(v10) && dev0 <= 1 && dev10 <= 1);
+      }
+      document.getElementById('s7-m0-'+i).addEventListener('input', recalc);
+      document.getElementById('s7-m10-'+i).addEventListener('input', recalc);
+      recalc();
+    });
+  })();
+
+  function buildAngleTable(bodyId, prefix, rows){
+    const tb = document.getElementById(bodyId);
+    if(!tb) return;
+    rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.set}°</td>
+        <td><input type="number" step="0.1" id="${prefix}-o-${i}" value="${r.obs}"></td>
+        <td id="${prefix}-v-${i}" class="tolcell"></td>
+        <td class="tolcell">≤ 1.0°</td>
+        <td id="${prefix}-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const o = parseFloat(document.getElementById(prefix+'-o-'+i).value);
+        const v = o - r.set;
+        document.getElementById(prefix+'-v-'+i).textContent = isNaN(v) ? '' : v.toFixed(1) + '°';
+        markPF(prefix+'-pf-'+i, !isNaN(v) && Math.abs(v) <= 1.0 + 1e-9);
+      }
+      document.getElementById(prefix+'-o-'+i).addEventListener('input', recalc);
+      recalc();
+    });
+  }
+  buildAngleTable('s8-body', 's8', [{set:0,obs:0},{set:90,obs:90},{set:45,obs:45.1},{set:270,obs:269.8}]);
+  buildAngleTable('s9-body', 's9', [{set:0,obs:0},{set:90,obs:90.1},{set:180,obs:180},{set:270,obs:270}]);
+  buildAngleTable('s11-body', 's11', [{set:0,obs:0},{set:45,obs:45},{set:90,obs:90},{set:270,obs:270},{set:315,obs:315}]);
+
+  if(document.getElementById('s1-coll')){
+    wireAbsTol('s10-lat','s10-lat-pf'); wireAbsTol('s10-long','s10-long-pf');
+    wireAbsTol('s10-vert','s10-vert-pf'); wireAbsTol('s10-rot','s10-rot-pf');
+    wireAbsTol('s12-tray','s12-tray-pf'); wireAbsTol('s12-wedge','s12-wedge-pf');
+    wireAbsTol('s1-coll','s1-coll-pf'); wireAbsTol('s1-gantry','s1-gantry-pf'); wireAbsTol('s1-couch','s1-couch-pf');
+    wireAbsTol('s2-radial','s2-radial-pf'); wireAbsTol('s2-trans','s2-trans-pf');
+    wireAbsTol('s3-sag-v','s3-sag-v-pf'); wireAbsTol('s3-ll-v','s3-ll-v-pf'); wireAbsTol('s3-ll-h','s3-ll-h-pf');
+    wireAbsTol('s3-rl-v','s3-rl-v-pf'); wireAbsTol('s3-rl-h','s3-rl-h-pf');
+    (function(){
+      const inp = document.getElementById('s12-latch');
+      function ev(){ markPF('s12-latch-pf', inp.value.trim().toLowerCase() === 'functional'); }
+      inp.addEventListener('input', ev); ev();
+    })();
+  }
+
+  document.getElementById('mech-printBtn').addEventListener('click', () => window.print());
+
+  document.querySelectorAll('#panel-mech input[id]').forEach(inp => {
+    inp.dataset.orig = inp.value;
+  });
+
+  document.getElementById('mech-resetBtn').addEventListener('click', () => {
+    if(!confirm('Reset all Mechanical QA fields to their default values?')) return;
+    document.querySelectorAll('#panel-mech input[id]').forEach(inp => {
+      inp.value = inp.dataset.orig !== undefined ? inp.dataset.orig : '';
+      inp.dispatchEvent(new Event('input', {bubbles:true}));
+    });
+  });
+
+  const mechToday = new Date().toISOString().slice(0,10);
+  const mechDateEl = document.getElementById('mech-date');
+  if(mechDateEl && !mechDateEl.value) mechDateEl.value = mechToday;
+
+  function collectData(){
+    const data = {};
+    document.querySelectorAll('.wrap input[id], .wrap select[id]').forEach(el => {
+      data[el.id] = el.value;
+    });
+    return { savedAt: new Date().toISOString(), source: 'PGIMER TrueBeam Monthly QA', data };
+  }
+
+  // Evidence images already persist to their own localStorage key the
+  // instant they're added/edited (see EvidenceGallery), so the frequent
+  // per-keystroke autosave() / Drive push above intentionally stays
+  // field-only — re-stringifying every photo on every keystroke would be
+  // slow and could exceed localStorage's quota. Manual backup/restore
+  // (Save backup / Share / restore file) below folds images in separately
+  // so a full export/import still carries the evidence with it.
+  function collectDataWithEvidence(){
+    const payload = collectData();
+    payload.evidence = EvidenceGallery.exportAll();
+    return payload;
+  }
+
+  function applyData(payload){
+    const data = (payload && payload.data) ? payload.data : payload;
+    if(!data || typeof data !== 'object') return 0;
+    let count = 0;
+    Object.keys(data).forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.value = data[id];
+      count++;
+    });
+    // Trigger recompute + auto-fill logic on every panel
+    document.querySelectorAll('.wrap input[id], .wrap select[id]').forEach(el => {
+      el.dispatchEvent(new Event('input', {bubbles:true}));
+      el.dispatchEvent(new Event('change', {bubbles:true}));
+    });
+    if(payload && payload.evidence){
+      EvidenceGallery.importAll(payload.evidence);
+      document.querySelectorAll('.evidence-gallery[data-eg-key]').forEach(el => {
+        el.dataset.egInited = '';
+      });
+      EvidenceGallery.initAllPending();
+    }
+    return count;
+  }
+
+  function setStatus(msg){
+    const el = document.getElementById('bb-status');
+    if(el) el.textContent = msg;
+  }
+
+  function filename(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return `PGIMER_TrueBeam_QA_Backup_${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+  }
+
+  function makeBlob(){
+    return new Blob([JSON.stringify(collectDataWithEvidence(), null, 2)], {type:'application/json'});
+  }
+
+  function downloadBlob(blob, name){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  async function shareBackup(){
+    const blob = makeBlob();
+    const name = filename();
+    if(navigator.canShare && navigator.share){
+      try{
+        const file = new File([blob], name, {type:'application/json'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'PGIMER TrueBeam QA Backup', text:'Monthly QA data backup'});
+          setStatus('Shared ' + name + ' — pick Drive (or any app) from the share sheet.');
+          return;
+        }
+      }catch(err){
+        if(err && err.name === 'AbortError'){ setStatus('Share cancelled.'); return; }
+        // fall through to plain download
+      }
+    }
+    downloadBlob(blob, name);
+    setStatus('Downloaded ' + name + ' — move it into your Drive app/folder to back it up.');
+  }
+
+  function saveBackup(){
+    const blob = makeBlob();
+    const name = filename();
+    downloadBlob(blob, name);
+    setStatus('Saved ' + name + ' to your downloads.');
+  }
+
+  function restoreBackup(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const payload = JSON.parse(reader.result);
+        const count = applyData(payload);
+        setStatus(`Restored ${count} fields from ${file.name}${payload.savedAt ? ' (saved ' + new Date(payload.savedAt).toLocaleString() + ')' : ''}.`);
+      }catch(err){
+        setStatus('Could not read that backup file — is it a valid JSON export from this form?');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function autosave(){
+    try{
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(collectData()));
+    }catch(e){ /* storage unavailable (e.g. some file:// contexts) — ignore, manual backup still works */ }
+    pushHistorySnapshot();
+    scheduleDriveAutosave();
+  }
+
+  // ---- rolling local history (keeps several past versions, not just the latest) ----
+  let lastHistoryPush = 0;
+  function pushHistorySnapshot(){
+    const now = Date.now();
+    if(now - lastHistoryPush < 60000) return; // at most one history entry per minute of editing
+    lastHistoryPush = now;
+    try{
+      const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      list.push(collectData());
+      while(list.length > HISTORY_MAX) list.shift();
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+      renderHistoryOptions();
+    }catch(e){ /* ignore */ }
+  }
+
+  function renderHistoryOptions(){
+    const sel = document.getElementById('bb-historySel');
+    if(!sel) return;
+    let list = [];
+    try{ list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }catch(e){}
+    sel.innerHTML = '<option value="">🕘 Local history…</option>';
+    list.slice().reverse().forEach((payload, idxFromEnd) => {
+      const realIdx = list.length - 1 - idxFromEnd;
+      const opt = document.createElement('option');
+      opt.value = String(realIdx);
+      opt.textContent = payload.savedAt ? new Date(payload.savedAt).toLocaleString() : ('Snapshot ' + realIdx);
+      sel.appendChild(opt);
+    });
+  }
+
+  document.getElementById('bb-historySel').addEventListener('change', (ev) => {
+    const idx = ev.target.value;
+    if(idx === '') return;
+    try{
+      const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const payload = list[Number(idx)];
+      if(payload && confirm('Restore the local snapshot from ' + new Date(payload.savedAt).toLocaleString() + '? This will overwrite current entries.')){
+        const count = applyData(payload);
+        setStatus(`Restored ${count} fields from local history (${new Date(payload.savedAt).toLocaleString()}).`);
+      }
+    }catch(e){ setStatus('Could not read that local history entry.'); }
+    ev.target.value = '';
+  });
+
+  // ---- Google Drive: real online autosave via Google Identity Services + Drive REST API ----
+  let driveTokenClient = null;
+  let driveAccessToken = null;
+  let driveTokenExpiry = 0;
+  let driveFolderId = null;
+  let driveAutosaveFileId = null;
+  let driveAutosaveTimer = null;
+
+  function driveStatus(msg){
+    const el = document.getElementById('bb-drive-status');
+    if(el) el.textContent = msg;
+  }
+
+  function getDriveClientId(promptIfMissing){
+    let id = localStorage.getItem(DRIVE_CLIENT_ID_KEY);
+    if(!id && promptIfMissing){
+      id = prompt(
+        'Paste your Google OAuth 2.0 Client ID (Web application type) from Google Cloud Console.\n\n' +
+        'One-time setup, saved only in this browser. See the "Drive setup" button for full steps.'
+      );
+      if(id) localStorage.setItem(DRIVE_CLIENT_ID_KEY, id.trim());
+    }
+    return id ? id.trim() : null;
+  }
+
+  function showDriveSetupInstructions(){
+    const origin = window.location.origin;
+    alert(
+      'ONE-TIME GOOGLE DRIVE SETUP\n\n' +
+      '1. Go to console.cloud.google.com → create/select a project.\n' +
+      '2. APIs & Services → Library → enable "Google Drive API".\n' +
+      '3. APIs & Services → OAuth consent screen → set up as "External", add your own Google\n' +
+      '   account as a Test user (keeps it unpublished/private — fine for personal use).\n' +
+      '4. APIs & Services → Credentials → Create Credentials → OAuth client ID → type "Web application".\n' +
+      '5. Under "Authorized JavaScript origins" add exactly:\n   ' + origin + '\n' +
+      '6. Copy the generated Client ID and paste it here when prompted (Connect Google Drive button).\n\n' +
+      'This site only requests the "drive.file" scope — it can only see/edit files it creates itself\n' +
+      '(a folder named "' + DRIVE_FOLDER_NAME + '"), never your other Drive files.'
+    );
+    localStorage.removeItem(DRIVE_CLIENT_ID_KEY);
+    getDriveClientId(true);
+  }
+
+  function ensureDriveTokenClient(){
+    const clientId = getDriveClientId(true);
+    if(!clientId) return null;
+    if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
+      driveStatus('☁️ Drive: Google sign-in script still loading — click Connect again in a moment.');
+      return null;
+    }
+    if(!driveTokenClient || driveTokenClient._cid !== clientId){
+      driveTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: DRIVE_SCOPES,
+        callback: () => {}
+      });
+      driveTokenClient._cid = clientId;
+    }
+    return driveTokenClient;
+  }
+
+  function getDriveAccessToken(interactive){
+    return new Promise((resolve, reject) => {
+      const client = ensureDriveTokenClient();
+      if(!client){ reject(new Error('no-client')); return; }
+      if(driveAccessToken && Date.now() < driveTokenExpiry - 60000){ resolve(driveAccessToken); return; }
+      client.callback = (resp) => {
+        if(resp.error){ reject(resp); return; }
+        driveAccessToken = resp.access_token;
+        driveTokenExpiry = Date.now() + (resp.expires_in * 1000);
+        resolve(driveAccessToken);
+      };
+      client.requestAccessToken({ prompt: interactive ? 'consent' : '' });
+    });
+  }
+
+  async function driveFetch(url, opts){
+    let token;
+    try{ token = await getDriveAccessToken(false); }
+    catch(e){ token = await getDriveAccessToken(true); }
+    opts = opts || {};
+    opts.headers = Object.assign({}, opts.headers, { Authorization: 'Bearer ' + token });
+    const res = await fetch(url, opts);
+    if(!res.ok){ const t = await res.text(); throw new Error('Drive API ' + res.status + ': ' + t); }
+    return res;
+  }
+
+  async function findOrCreateDriveFolder(){
+    if(driveFolderId) return driveFolderId;
+    const q = encodeURIComponent(`name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+    const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+    const json = await res.json();
+    if(json.files && json.files.length){ driveFolderId = json.files[0].id; return driveFolderId; }
+    const createRes = await driveFetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+    });
+    const created = await createRes.json();
+    driveFolderId = created.id;
+    return driveFolderId;
+  }
+
+  async function findDriveFile(name, folderId){
+    const q = encodeURIComponent(`name='${name}' and '${folderId}' in parents and trashed=false`);
+    const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+    const json = await res.json();
+    return (json.files && json.files.length) ? json.files[0].id : null;
+  }
+
+  function driveMultipart(metadata, dataStr){
+    const boundary = 'pgimerqa' + Date.now();
+    const body =
+      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
+      `--${boundary}\r\nContent-Type: application/json\r\n\r\n${dataStr}\r\n--${boundary}--`;
+    return { body, boundary };
+  }
+
+  async function uploadToDrive(name, dataStr, existingFileId){
+    const folderId = await findOrCreateDriveFolder();
+    const metadata = existingFileId ? { name } : { name, parents: [folderId] };
+    const { body, boundary } = driveMultipart(metadata, dataStr);
+    const url = existingFileId
+      ? `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`
+      : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+    const res = await driveFetch(url, {
+      method: existingFileId ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+      body
+    });
+    return res.json();
+  }
+
+  function scheduleDriveAutosave(){
+    if(localStorage.getItem(DRIVE_CONNECTED_KEY) !== '1') return;
+    clearTimeout(driveAutosaveTimer);
+    driveAutosaveTimer = setTimeout(doDriveAutosave, 5000);
+  }
+
+  async function doDriveAutosave(){
+    try{
+      driveStatus('☁️ Drive: saving…');
+      const dataStr = JSON.stringify(collectData(), null, 2);
+      if(!driveAutosaveFileId){
+        const folderId = await findOrCreateDriveFolder();
+        driveAutosaveFileId = await findDriveFile(DRIVE_AUTOSAVE_NAME, folderId);
+      }
+      const result = await uploadToDrive(DRIVE_AUTOSAVE_NAME, dataStr, driveAutosaveFileId);
+      driveAutosaveFileId = result.id || driveAutosaveFileId;
+      driveStatus('☁️ Drive: autosaved ' + new Date().toLocaleTimeString());
+    }catch(err){
+      console.error(err);
+      driveStatus('☁️ Drive: autosave failed — will retry on next edit');
+    }
+  }
+
+  async function connectDrive(){
+    try{
+      driveStatus('☁️ Drive: connecting…');
+      await getDriveAccessToken(true);
+      await findOrCreateDriveFolder();
+      localStorage.setItem(DRIVE_CONNECTED_KEY, '1');
+      document.getElementById('bb-driveSnapshotBtn').disabled = false;
+      driveStatus('🟢 Drive connected — autosaving online');
+      scheduleDriveAutosave();
+    }catch(err){
+      console.error(err);
+      driveStatus('☁️ Drive: connection failed — check Client ID / origin, then try again');
+    }
+  }
+
+  async function saveSnapshotToDrive(){
+    try{
+      driveStatus('☁️ Drive: saving dated snapshot…');
+      const dataStr = JSON.stringify(collectData(), null, 2);
+      const result = await uploadToDrive(filename(), dataStr, null);
+      driveStatus('🟢 Drive: snapshot saved (' + result.name + ')');
+    }catch(err){
+      console.error(err);
+      driveStatus('☁️ Drive: snapshot save failed');
+    }
+  }
+
+  document.getElementById('bb-driveConnectBtn').addEventListener('click', connectDrive);
+  document.getElementById('bb-driveSettingsBtn').addEventListener('click', showDriveSetupInstructions);
+  document.getElementById('bb-driveSnapshotBtn').addEventListener('click', saveSnapshotToDrive);
+
+  renderHistoryOptions();
+  if(localStorage.getItem(DRIVE_CONNECTED_KEY) === '1'){
+    document.getElementById('bb-driveSnapshotBtn').disabled = false;
+    driveStatus('☁️ Drive: was connected — will reconnect quietly on first edit or click Connect');
+  }
+
+  document.getElementById('bb-saveBtn').addEventListener('click', saveBackup);
+  document.getElementById('bb-shareBtn').addEventListener('click', shareBackup);
+  document.getElementById('bb-restoreBtn').addEventListener('click', () => {
+    document.getElementById('bb-fileInput').click();
+  });
+  document.getElementById('bb-fileInput').addEventListener('change', (ev) => {
+    const file = ev.target.files[0];
+    if(file) restoreBackup(file);
+    ev.target.value = '';
+  });
+
+  let autosaveTimer = null;
+  document.querySelector('.wrap').addEventListener('input', () => {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(autosave, 800);
+  });
+
+  // Offer to restore a local autosave from a previous visit, if present.
+  try{
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if(raw){
+      const payload = JSON.parse(raw);
+      const when = payload.savedAt ? new Date(payload.savedAt).toLocaleString() : 'earlier';
+      setStatus(`Local autosave found from ${when}.`);
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-ghost';
+      btn.textContent = '↺ Restore local autosave';
+      btn.addEventListener('click', () => {
+        const count = applyData(payload);
+        setStatus(`Restored ${count} fields from local autosave (${when}).`);
+        btn.remove();
+      });
+      document.querySelector('.backupbar').insertBefore(btn, document.getElementById('bb-restoreBtn'));
+    }
+  }catch(e){ /* ignore */ }
+})();
+
+</script>
+
+<script>
+/* =========================================================================
+   MLC QA — Monthly MLC section. Self-contained: reuses the app's generic
+   `.wrap input[id]` autosave/backup/restore/print wiring (no changes needed
+   there). Combines the earlier "A" (Novalis-era) and later "B" (2019)
+   departmental MLC QA record formats, as requested — tests unique to either
+   source are labelled; shared tests use the merged parameter set.
+   ========================================================================= */
+(function(){
+  function markPF(cellId, pass){
+    const el = document.getElementById(cellId);
+    if(!el) return;
+    el.innerHTML = '<span class="pf ' + (pass ? 'pass' : 'fail') + '">' + (pass ? 'PASS' : 'FAIL') + '</span>';
+  }
+  function wireAbsTol(inputId, cellId, tolOverride){
+    const inp = document.getElementById(inputId);
+    if(!inp) return;
+    const tol = tolOverride !== undefined ? tolOverride : parseFloat(inp.dataset.tol);
+    function ev(){
+      const v = parseFloat(inp.value);
+      markPF(cellId, !isNaN(v) && Math.abs(v) <= tol + 1e-9);
+    }
+    inp.addEventListener('input', ev);
+    ev();
+  }
+  function wireQual(selId, cellId, passValue){
+    const sel = document.getElementById(selId);
+    if(!sel) return;
+    function ev(){ markPF(cellId, sel.value === (passValue || 'pass') || sel.value === 'ok'); }
+    sel.addEventListener('change', ev);
+    ev();
+  }
+
+  if(!document.getElementById('panel-mlc')) return;
+
+  // ---- 1. Repeatability ----
+  wireQual('mlc-s1-result', 'mlc-s1-pf', 'ok');
+
+  // ---- 2. Leaf Position Accuracy (merged A+B) ----
+  const s2rows = [
+    {label:'MLC closed — no field light observed', a:0, b:0},
+    {label:'Leaf position accuracy @ -10 cm (Bank A)', a:0, b:0},
+    {label:'Leaf position accuracy @ -10 cm (Bank B)', a:0, b:0},
+    {label:'Leaf position accuracy @ +5 cm (both banks)', a:0, b:0},
+    {label:'Leaf position accuracy @ +15 cm (both banks)', a:0, b:0}
+  ];
+  (function buildS2(){
+    const tb = document.getElementById('mlc-s2-body');
+    if(!tb) return;
+    s2rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td>
+        <td><input type="number" step="0.1" id="mlc-s2-a-${i}" value="${r.a}"></td>
+        <td><input type="number" step="0.1" id="mlc-s2-b-${i}" value="${r.b}"></td>
+        <td class="tolcell">&plusmn; 1 mm</td>
+        <td id="mlc-s2-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const a = parseFloat(document.getElementById('mlc-s2-a-'+i).value);
+        const b = parseFloat(document.getElementById('mlc-s2-b-'+i).value);
+        markPF('mlc-s2-pf-'+i, !isNaN(a) && !isNaN(b) && Math.abs(a) <= 1 + 1e-9 && Math.abs(b) <= 1 + 1e-9);
+      }
+      document.getElementById('mlc-s2-a-'+i).addEventListener('input', recalc);
+      document.getElementById('mlc-s2-b-'+i).addEventListener('input', recalc);
+      recalc();
+    });
+  })();
+
+  // ---- 3. MLC Field-Size / Shape Accuracy (merged A+B) ----
+  const s3rows = [
+    {label:'1 x 1', fs:1, half:0.5}, {label:'2 x 2', fs:2, half:1.0},
+    {label:'8 x 8', fs:8, half:4.0}, {label:'10 x 10', fs:10, half:5.0},
+    {label:'15 x 15', fs:15, half:7.5}, {label:'16 x 16', fs:16, half:8.0},
+    {label:'24 x 24', fs:24, half:12.0}
+  ];
+  (function buildS3(){
+    const tb = document.getElementById('mlc-s3-body');
+    if(!tb) return;
+    s3rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s3-x1-${i}" value="${r.half}"></td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s3-x2-${i}" value="${r.half}"></td>
+        <td id="mlc-s3-dx-${i}" class="tolcell"></td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s3-y1-${i}" value="${r.half}"></td>
+        <td><input type="number" step="0.01" class="narrow" id="mlc-s3-y2-${i}" value="${r.half}"></td>
+        <td id="mlc-s3-dy-${i}" class="tolcell"></td>
+        <td id="mlc-s3-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const x1 = parseFloat(document.getElementById('mlc-s3-x1-'+i).value)||0;
+        const x2 = parseFloat(document.getElementById('mlc-s3-x2-'+i).value)||0;
+        const y1 = parseFloat(document.getElementById('mlc-s3-y1-'+i).value)||0;
+        const y2 = parseFloat(document.getElementById('mlc-s3-y2-'+i).value)||0;
+        const dX = ((x1+x2) - r.fs) * 10, dY = ((y1+y2) - r.fs) * 10; // mm
+        document.getElementById('mlc-s3-dx-'+i).textContent = dX.toFixed(1) + ' mm';
+        document.getElementById('mlc-s3-dy-'+i).textContent = dY.toFixed(1) + ' mm';
+        markPF('mlc-s3-pf-'+i, Math.abs(dX) <= 2 + 1e-9 && Math.abs(dY) <= 2 + 1e-9);
+      }
+      ['x1','x2','y1','y2'].forEach(k => document.getElementById('mlc-s3-'+k+'-'+i).addEventListener('input', recalc));
+      recalc();
+    });
+  })();
+
+  // ---- 4. Collimator Clutch Slip ----
+  wireAbsTol('mlc-s4-drift', 'mlc-s4-drift-pf');
+
+  // ---- 5. Coincidence of Optical and Radiation Field ----
+  (function(){
+    function recalc(){
+      const setx = parseFloat(document.getElementById('mlc-s5-setx').value)||0;
+      const obsx = parseFloat(document.getElementById('mlc-s5-obsx').value)||0;
+      const sety = parseFloat(document.getElementById('mlc-s5-sety').value)||0;
+      const obsy = parseFloat(document.getElementById('mlc-s5-obsy').value)||0;
+      const dx = (obsx - setx) * 10, dy = (obsy - sety) * 10;
+      document.getElementById('mlc-s5-dx').textContent = dx.toFixed(1) + ' mm';
+      document.getElementById('mlc-s5-dy').textContent = dy.toFixed(1) + ' mm';
+      markPF('mlc-s5-x-pf', Math.abs(dx) <= 2 + 1e-9);
+      markPF('mlc-s5-y-pf', Math.abs(dy) <= 2 + 1e-9);
+    }
+    ['mlc-s5-setx','mlc-s5-obsx','mlc-s5-sety','mlc-s5-obsy'].forEach(id => document.getElementById(id).addEventListener('input', recalc));
+    recalc();
+  })();
+
+  // ---- 6/7/8. Spoke shots ----
+  wireAbsTol('mlc-s6-dia', 'mlc-s6-dia-pf');
+  wireAbsTol('mlc-s7-dia', 'mlc-s7-dia-pf');
+  wireAbsTol('mlc-s8-dia', 'mlc-s8-dia-pf');
+
+  // ---- 9. MLC Alignment ----
+  wireQual('mlc-s9-tg', 'mlc-s9-tg-pf');
+  wireQual('mlc-s9-rle', 'mlc-s9-rle-pf');
+
+  // ---- 10. Garden Fence ----
+  wireQual('mlc-s10-noerr', 'mlc-s10-noerr-pf');
+  wireQual('mlc-s10-err', 'mlc-s10-err-pf');
+
+  // ---- 11. Picket Fence ----
+  wireQual('mlc-s11-noerr', 'mlc-s11-noerr-pf');
+
+  // ---- 12. Sweeping Field — Gravity Effect ----
+  const s12rows = [
+    {angle:'Open-Open', ref:true},
+    {angle:'G0 (reference)', isRef:true},
+    {angle:'G90', isRef:false},
+    {angle:'G270', isRef:false}
+  ];
+  (function buildS12(){
+    const tb = document.getElementById('mlc-s12-body');
+    if(!tb) return;
+    s12rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.angle}</td>
+        <td><input type="number" step="0.0001" class="wide" id="mlc-s12-mr-${i}" value="0"></td>
+        <td id="mlc-s12-norm-${i}" class="tolcell"></td>
+        <td id="mlc-s12-var-${i}" class="tolcell"></td>
+        <td class="tolcell">${r.ref ? '—' : (r.isRef ? 'Reference' : '&plusmn; 3%')}</td>
+        <td id="mlc-s12-pf-${i}"></td>`;
+      tb.appendChild(tr);
+    });
+    function recalcAll(){
+      const openOpen = parseFloat(document.getElementById('mlc-s12-mr-0').value) || 0;
+      let g0norm = null;
+      s12rows.forEach((r,i) => {
+        const mr = parseFloat(document.getElementById('mlc-s12-mr-'+i).value) || 0;
+        const norm = openOpen > 0 ? mr / openOpen : 0;
+        document.getElementById('mlc-s12-norm-'+i).textContent = norm ? norm.toFixed(4) : '';
+        if(r.isRef) g0norm = norm;
+      });
+      s12rows.forEach((r,i) => {
+        if(r.ref) return;
+        const norm = parseFloat(document.getElementById('mlc-s12-norm-'+i).textContent) || 0;
+        if(r.isRef){
+          document.getElementById('mlc-s12-var-'+i).textContent = 'Reference';
+          markPF('mlc-s12-pf-'+i, true);
+        } else {
+          const pctVar = g0norm ? ((norm - g0norm) / g0norm) * 100 : 0;
+          document.getElementById('mlc-s12-var-'+i).textContent = pctVar.toFixed(1) + '%';
+          markPF('mlc-s12-pf-'+i, Math.abs(pctVar) <= 3 + 1e-9);
+        }
+      });
+    }
+    s12rows.forEach((r,i) => document.getElementById('mlc-s12-mr-'+i).addEventListener('input', recalcAll));
+    recalcAll();
+  })();
+
+  // ---- 13. Average MLC Transmission ----
+  const s13aRows = [
+    {e:'6 MV', open:296.4, a:3.825, b:3.733},
+    {e:'15 MV', open:322.2, a:4.768, b:4.669}
+  ];
+  (function buildS13a(){
+    const tb = document.getElementById('mlc-s13a-body');
+    if(!tb) return;
+    s13aRows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><input type="text" class="narrow" id="mlc-s13a-e-${i}" value="${r.e}"></td>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s13a-open-${i}" value="${r.open}"></td>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s13a-a-${i}" value="${r.a}"></td>
+        <td id="mlc-s13a-pcta-${i}" class="tolcell"></td>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s13a-b-${i}" value="${r.b}"></td>
+        <td id="mlc-s13a-pctb-${i}" class="tolcell"></td>
+        <td class="tolcell">&le; 2%</td><td id="mlc-s13a-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const open = parseFloat(document.getElementById('mlc-s13a-open-'+i).value) || 0;
+        const a = parseFloat(document.getElementById('mlc-s13a-a-'+i).value) || 0;
+        const b = parseFloat(document.getElementById('mlc-s13a-b-'+i).value) || 0;
+        const pctA = open ? (a/open)*100 : 0, pctB = open ? (b/open)*100 : 0;
+        document.getElementById('mlc-s13a-pcta-'+i).textContent = pctA.toFixed(2) + '%';
+        document.getElementById('mlc-s13a-pctb-'+i).textContent = pctB.toFixed(2) + '%';
+        markPF('mlc-s13a-pf-'+i, pctA <= 2 + 1e-9 && pctB <= 2 + 1e-9);
+      }
+      ['open','a','b'].forEach(k => document.getElementById('mlc-s13a-'+k+'-'+i).addEventListener('input', recalc));
+      recalc();
+    });
+  })();
+  (function(){
+    function recalc(){
+      const open = parseFloat(document.getElementById('mlc-s13b-open').value) || 0;
+      const a = parseFloat(document.getElementById('mlc-s13b-a').value) || 0;
+      const b = parseFloat(document.getElementById('mlc-s13b-b').value) || 0;
+      const avg = (a+b)/2;
+      const pct = open ? (avg/open)*100 : 0;
+      document.getElementById('mlc-s13b-pct').textContent = pct.toFixed(2) + '%';
+      markPF('mlc-s13b-pf', pct < 4 - 1e-9);
+    }
+    ['mlc-s13b-open','mlc-s13b-a','mlc-s13b-b'].forEach(id => document.getElementById(id).addEventListener('input', recalc));
+    recalc();
+  })();
+
+  // ---- 14. Rounded (Closed-Field) MLC Transmission ----
+  const s14rows = [
+    {e:'6 MV', open:296.4, closed:33.65},
+    {e:'15 MV', open:322.2, closed:37.56}
+  ];
+  (function buildS14(){
+    const tb = document.getElementById('mlc-s14-body');
+    if(!tb) return;
+    s14rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><input type="text" class="narrow" id="mlc-s14-e-${i}" value="${r.e}"></td>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s14-open-${i}" value="${r.open}"></td>
+        <td><input type="number" step="0.001" class="wide" id="mlc-s14-closed-${i}" value="${r.closed}"></td>
+        <td id="mlc-s14-pct-${i}" class="tolcell"></td>
+        <td class="tolcell">&le; 20%</td><td id="mlc-s14-pf-${i}"></td>`;
+      tb.appendChild(tr);
+      function recalc(){
+        const open = parseFloat(document.getElementById('mlc-s14-open-'+i).value) || 0;
+        const closed = parseFloat(document.getElementById('mlc-s14-closed-'+i).value) || 0;
+        const pct = open ? (closed/open)*100 : 0;
+        document.getElementById('mlc-s14-pct-'+i).textContent = pct.toFixed(2) + '%';
+        markPF('mlc-s14-pf-'+i, pct <= 20 + 1e-9);
+      }
+      ['open','closed'].forEach(k => document.getElementById('mlc-s14-'+k+'-'+i).addEventListener('input', recalc));
+      recalc();
+    });
+  })();
+
+  // ---- 15. Dosimetric Leaf Gap — regression tables ----
+  function linreg(points){
+    // points: [{x, y}] — OLS fit y = a*x + b, plus R^2
+    const n = points.length;
+    if(n < 2) return {a:NaN, b:NaN, r2:NaN};
+    let sx=0, sy=0, sxx=0, sxy=0, syy=0;
+    points.forEach(p => { sx+=p.x; sy+=p.y; sxx+=p.x*p.x; sxy+=p.x*p.y; syy+=p.y*p.y; });
+    const a = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+    const b = (sy - a*sx) / n;
+    const yMean = sy/n;
+    let ssTot=0, ssRes=0;
+    points.forEach(p => { const yPred = a*p.x+b; ssTot += (p.y-yMean)*(p.y-yMean); ssRes += (p.y-yPred)*(p.y-yPred); });
+    const r2 = ssTot ? 1 - ssRes/ssTot : 1;
+    return {a, b, r2};
+  }
+
+  function buildDlgTable(prefix, gaps, rtDefault, windowInputId){
+    const tb = document.getElementById(prefix + '-body');
+    if(!tb) return;
+    gaps.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.g}</td>
+        <td><input type="number" step="0.0001" class="wide" id="${prefix}-rg-${i}" value="${r.rg}"></td>
+        <td id="${prefix}-rgt-${i}" class="tolcell"></td>
+        <td id="${prefix}-rgp-${i}" class="tolcell"></td>`;
+      tb.appendChild(tr);
+    });
+    function recalcAll(){
+      const rtVal = parseFloat(document.getElementById(windowInputId.rt).value) || 0;
+      const w = parseFloat(document.getElementById(windowInputId.w).value) || 120;
+      const points = [];
+      gaps.forEach((r,i) => {
+        const rg = parseFloat(document.getElementById(prefix+'-rg-'+i).value) || 0;
+        const rgT = rtVal * (1 - r.g / w);
+        const rgP = rg - rgT;
+        document.getElementById(prefix+'-rgt-'+i).textContent = rgT.toFixed(4);
+        document.getElementById(prefix+'-rgp-'+i).textContent = rgP.toFixed(4);
+        points.push({x: rgP, y: r.g});
+      });
+      const {a, b, r2} = linreg(points);
+      const dlg = isFinite(b) ? Math.abs(b) : NaN;
+      document.getElementById(prefix+'-slope').textContent = isFinite(a) ? a.toFixed(4) : '—';
+      document.getElementById(prefix+'-intercept').textContent = isFinite(b) ? b.toFixed(4) : '—';
+      document.getElementById(prefix+'-dlg').textContent = isFinite(dlg) ? dlg.toFixed(3) : '—';
+      document.getElementById(prefix+'-r2').textContent = isFinite(r2) ? r2.toFixed(4) : '—';
+    }
+    gaps.forEach((r,i) => document.getElementById(prefix+'-rg-'+i).addEventListener('input', recalcAll));
+    document.getElementById(windowInputId.rt).addEventListener('input', recalcAll);
+    document.getElementById(windowInputId.w).addEventListener('input', recalcAll);
+    recalcAll();
+  }
+
+  buildDlgTable('mlc-s15a6', [
+    {g:2, rg:0.6752},{g:4, rg:0.9993},{g:6, rg:1.329},{g:10, rg:1.977},
+    {g:14, rg:2.625},{g:16, rg:2.951},{g:20, rg:3.605}
+  ], null, {rt:'mlc-s15a6-rt', w:'mlc-s15-window'});
+
+  buildDlgTable('mlc-s15a15', [
+    {g:2, rg:0.7767},{g:4, rg:1.128},{g:6, rg:1.485},{g:10, rg:2.191},
+    {g:14, rg:2.89},{g:16, rg:3.245},{g:20, rg:3.953}
+  ], null, {rt:'mlc-s15a15-rt', w:'mlc-s15-window'});
+
+  buildDlgTable('mlc-s15b6', [
+    {g:1, rg:1.461},{g:2, rg:1.788},{g:5, rg:2.805},{g:10, rg:4.617},{g:15, rg:6.612}
+  ], null, {rt:'mlc-s15b6-rt', w:'mlc-s15-window'});
+
+  // ---- Print / Reset ----
+  document.getElementById('mlc-printBtn').addEventListener('click', () => window.print());
+
+  document.querySelectorAll('#panel-mlc input[id], #panel-mlc select[id], #panel-mlc textarea[id]').forEach(inp => {
+    inp.dataset.orig = inp.value;
+  });
+
+  document.getElementById('mlc-resetBtn').addEventListener('click', () => {
+    if(!confirm('Reset all MLC QA fields to their default values?')) return;
+    document.querySelectorAll('#panel-mlc input[id], #panel-mlc select[id], #panel-mlc textarea[id]').forEach(inp => {
+      inp.value = inp.dataset.orig !== undefined ? inp.dataset.orig : '';
+      inp.dispatchEvent(new Event('input', {bubbles:true}));
+      inp.dispatchEvent(new Event('change', {bubbles:true}));
+    });
+  });
+
+  const mlcToday = new Date().toISOString().slice(0,10);
+  const mlcDateEl = document.getElementById('mlc-date');
+  if(mlcDateEl && !mlcDateEl.value) mlcDateEl.value = mlcToday;
+})();
+</script>
+
+</body>
+</html>
