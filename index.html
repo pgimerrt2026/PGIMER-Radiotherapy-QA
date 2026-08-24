@@ -17,6 +17,8 @@
     --line-soft:#EAF0EF;
     --pass-bg:#E7F5EA; --pass-fg:#1E7A34; --pass-line:#BEE3C6;
     --fail-bg:#FBEAE9; --fail-fg:#B3261E; --fail-line:#F1C4C1;
+    --pend-bg:#FDF3E2; --pend-fg:#8A5A0E; --pend-line:#F0DBAB;
+    --na-bg:#F0F2F1; --na-fg:#5F6B69; --na-line:#DCE2E0;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --disp: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     --body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -26,6 +28,9 @@
   .sec-tpr{ --accent:#5B3E9E; --accent-dark:#43297A; }
   .sec-mech{ --accent:#1A6B3C; --accent-dark:#12522C; }
   .sec-mlc{ --accent:#0E5FA6; --accent-dark:#0A4A82; }
+  .sec-imaging{ --accent:#146C94; --accent-dark:#0F5474; }
+  .sec-dsm{ --accent:#A63D22; --accent-dark:#7D2D19; }
+  .sec-dout{ --accent:#0E7C86; --accent-dark:#0A5E66; }
   .mlc-src{font-size:10px; font-weight:600; letter-spacing:.02em; padding:1px 7px; border-radius:999px; display:inline-block; margin-left:6px; vertical-align:middle;}
   .mlc-src.a{background:#EAF2FB; color:#0A4A82; border:1px solid #C7DEF3;}
   .mlc-src.b{background:#FBF3DE; color:#7A5B0E; border:1px solid #E9D8A6;}
@@ -49,8 +54,11 @@
   .mech-card input.narrow{width:56px;}
   .tolcell{font-family:var(--mono); font-size:11.5px; color:var(--ink-soft);}
   .pf{font-family:var(--mono); font-weight:700; font-size:11.5px; padding:3px 9px; border-radius:999px; display:inline-block; border:1px solid var(--line);}
+  .pf .pf-icon{margin-right:3px;}
   .pf.pass{background:var(--pass-bg); color:var(--pass-fg); border-color:var(--pass-line);}
   .pf.fail{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+  .pf.pending{background:var(--pend-bg); color:var(--pend-fg); border-color:var(--pend-line);}
+  .pf.na{background:var(--na-bg); color:var(--na-fg); border-color:var(--na-line);}
   .mech-footerbox{background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; display:flex; gap:24px; flex-wrap:wrap;}
   .mech-footerbox .fld{display:flex; flex-direction:column; gap:5px;}
   .mech-footerbox label{font-size:11.5px; font-weight:600; color:var(--ink-soft);}
@@ -284,8 +292,11 @@
     padding:4px 10px; border-radius:999px; border:1px solid var(--line);
     background:#F2F5F4; color:var(--ink-soft);
   }
+  .status-badge .sb-icon{margin-right:3px;}
   .status-badge.pass{background:var(--pass-bg); color:var(--pass-fg); border-color:var(--pass-line);}
   .status-badge.fail{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+  .status-badge.pending{background:var(--pend-bg); color:var(--pend-fg); border-color:var(--pend-line);}
+  .status-badge.na{background:var(--na-bg); color:var(--na-fg); border-color:var(--na-line);}
 
   .row-inline{display:flex; gap:10px; margin-bottom:10px;}
   .row-inline .field{flex:1;}
@@ -317,6 +328,7 @@
   .result-box.output .rv{color:var(--accent-dark);}
   .result-box.var .rv.pass{color:var(--pass-fg);}
   .result-box.var .rv.fail{color:var(--fail-fg);}
+  .result-box.var .rv.pending{color:var(--pend-fg);}
 
   /* ===== Summary table ===== */
   .summary{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:20px;}
@@ -330,6 +342,17 @@
   table.sum-table td.energycol{font-family:var(--disp); font-weight:700; font-size:13px; text-align:left;}
   table.sum-table td.pass{color:var(--pass-fg); font-weight:700;}
   table.sum-table td.fail{color:var(--fail-fg); font-weight:700;}
+  table.sum-table td.pending{color:var(--pend-fg); font-weight:700;}
+  table.sum-table td.na{color:var(--na-fg); font-weight:700;}
+
+  /* ===== Overall status summary chip (per QA module) ===== */
+  .overall-status{display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; margin-left:10px;}
+  .overall-status .ov-chip{display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); background:#F2F5F4; color:var(--ink-soft); font-weight:700;}
+  .overall-status .ov-chip.pass{background:var(--pass-bg); color:var(--pass-fg); border-color:var(--pass-line);}
+  .overall-status .ov-chip.fail{background:var(--fail-bg); color:var(--fail-fg); border-color:var(--fail-line);}
+  .overall-status .ov-chip.pending{background:var(--pend-bg); color:var(--pend-fg); border-color:var(--pend-line);}
+  .overall-status .ov-chip.na{background:var(--na-bg); color:var(--na-fg); border-color:var(--na-line);}
+  .summary-title-row{display:flex; align-items:center; flex-wrap:wrap; gap:8px 0; margin:0 0 3px;}
 
   /* ===== Sign-off ===== */
   .signoff{
@@ -349,10 +372,10 @@
 
   /* ===== Print ===== */
   @media print{
-    @page{ size:A4 portrait; margin:12mm 12mm 12mm 25mm; }
+    @page{ size:A4 portrait; margin:10mm 10mm 10mm 15mm; }
 
     html,body{background:#fff;}
-    body{padding:0; margin:0; background:#fff; font-size:10.5pt; line-height:1.15;
+    body{padding:0; margin:0; background:#fff; font-size:10.5pt; line-height:1.25;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     .wrap{max-width:100%; margin:0;}
 
@@ -384,19 +407,19 @@
       padding:6px 14px 5px; margin-bottom:5px; border-radius:0 5px 5px 5px;
       break-inside:avoid; page-break-inside:avoid;
     }
-    .lh-title{font-size:14pt; margin-top:0; padding-top:0; border-top:none; font-weight:700; line-height:1.15;}
-    .lh-sub{font-size:9.5pt;}
+    .lh-title{font-size:15pt; margin-top:0; padding-top:0; border-top:none; font-weight:700; line-height:1.2;}
+    .lh-sub{font-size:10pt;}
     .panelhead .lh-docbox{margin-top:5px !important;}
-    .lh-docbox{font-size:9pt; gap:2px 8px;}
-    .lh-docbox input{font-size:9pt; padding:1px 6px;}
+    .lh-docbox{font-size:9.5pt; gap:2px 8px;}
+    .lh-docbox input{font-size:9.5pt; padding:1px 6px;}
 
     /* ===== Measurement setup block (sub-heading) ===== */
     .setup{padding:6px 14px 5px; margin-bottom:5px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
     .setup-title{font-size:12pt; margin-bottom:5px;}
     .setup-grid{grid-template-columns:repeat(4,1fr); gap:4px 8px;}
     .field{gap:2px;}
-    .field label{font-size:9.5pt; letter-spacing:.03em; line-height:1.1;}
-    .field input, .field select{font-size:10.5pt; padding:2px 6px; font-weight:600; line-height:1.15;}
+    .field label{font-size:10pt; letter-spacing:.03em; line-height:1.15;}
+    .field input, .field select{font-size:10.5pt; padding:2px 6px; font-weight:600; line-height:1.2;}
 
     /* ===== Energy cards — two per row so each card stays wide and legible ===== */
     .cards{
@@ -404,32 +427,32 @@
     }
     .card{padding:6px 8px 7px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
     .card-head{margin-bottom:5px;}
-    .card-head .energy{font-size:11.5pt; font-weight:700;}
-    .card-head .energy .meta{font-size:9.5pt;}
-    .status-badge{font-size:9.5pt; padding:2px 9px;}
+    .card-head .energy{font-size:12pt; font-weight:700;}
+    .card-head .energy .meta{font-size:10pt;}
+    .status-badge{font-size:10pt; padding:2px 9px;}
 
     /* ===== Mechanical QA cards — tightened for print so the 12-section
        record fits in fewer pages instead of leaving a near-empty last page ===== */
     .mech-card{padding:5px 8px 6px; margin-bottom:4px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
-    .mech-card h3{font-size:10.5pt; margin:0 0 1px;}
-    .mech-card .refline{font-size:8pt; margin:0 0 4px; line-height:1.2;}
-    .mech-card table{font-size:9pt;}
-    .mech-card th{font-size:7.5pt; padding:3px 5px;}
-    .mech-card td{padding:2px 5px; line-height:1.2;}
-    .mech-card input[type=number], .mech-card input[type=text]{font-size:9pt; padding:1px 4px; width:56px;}
+    .mech-card h3{font-size:11.5pt; margin:0 0 1px;}
+    .mech-card .refline{font-size:8.5pt; margin:0 0 4px; line-height:1.25;}
+    .mech-card table{font-size:9.5pt;}
+    .mech-card th{font-size:8pt; padding:3px 5px;}
+    .mech-card td{padding:2px 5px; line-height:1.25;}
+    .mech-card input[type=number], .mech-card input[type=text]{font-size:9.5pt; padding:1px 4px; width:56px;}
     .mech-card input.wide{width:100px;}
     .mech-footerbox{padding:6px 12px; gap:12px;}
-    .mech-footerbox input{width:180px; font-size:9pt;}
-    .mech-footerbox label{font-size:9pt;}
+    .mech-footerbox input{width:180px; font-size:9.5pt;}
+    .mech-footerbox label{font-size:9.5pt;}
 
     /* MLC setup-row fields (film type, angle lists, field-size text, etc.) need
        more than the default 56px number/text input width or they truncate */
     .mech-card .setuprow{gap:5px 14px; margin:0 0 6px;}
-    .mech-card .setuprow input{width:150px !important; font-size:8pt;}
-    .mech-card .setuprow label{font-size:8.5pt;}
-    .mech-card .regbox{padding:5px 8px; gap:10px; font-size:9pt; margin-top:5px;}
-    .mech-card .mlc-note{font-size:8pt; margin:3px 0 5px;}
-    .mlc-src{font-size:7.5pt; padding:0 5px;}
+    .mech-card .setuprow input{width:150px !important; font-size:8.5pt;}
+    .mech-card .setuprow label{font-size:9pt;}
+    .mech-card .regbox{padding:5px 8px; gap:10px; font-size:9.5pt; margin-top:5px;}
+    .mech-card .mlc-note{font-size:8.5pt; margin:3px 0 5px;}
+    .mlc-src{font-size:8pt; padding:0 5px;}
 
     .row-inline{gap:5px; margin-bottom:5px; flex-wrap:wrap;}
     .row-inline .field{min-width:0;}
@@ -454,25 +477,31 @@
        a mostly-empty page ===== */
     .summary{padding:6px 12px; margin-bottom:5px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
     .summary-title{font-size:12pt; margin-bottom:1px;}
-    .summary-sub{font-size:9pt; margin-bottom:5px;}
-    table.sum-table{font-size:10pt;}
-    table.sum-table th, table.sum-table td{padding:3px 6px; line-height:1.2;}
-    table.sum-table th{font-size:9.5pt;}
-    table.sum-table td.energycol{font-size:10.5pt;}
+    .summary-title-row{margin-bottom:1px;}
+    .summary-sub{font-size:9.5pt; margin-bottom:5px;}
+    table.sum-table{font-size:10.5pt;}
+    table.sum-table th, table.sum-table td{padding:3px 6px; line-height:1.25;}
+    table.sum-table th{font-size:10pt;}
+    table.sum-table td.energycol{font-size:11pt;}
     table.sum-table tr{break-inside:avoid; page-break-inside:avoid;}
+    .overall-status{font-size:9.5pt; gap:6px;}
+    .overall-status .ov-chip{padding:1px 7px;}
 
-    .legend{font-size:9pt; margin:5px 2px 6px; line-height:1.3;}
+    .legend{font-size:9.5pt; margin:5px 2px 6px; line-height:1.35;}
 
     .signoff{padding:6px 12px 8px; gap:8px 12px; border-radius:5px; break-inside:avoid; page-break-inside:avoid;}
-    .signoff .field label{font-size:9.5pt;}
+    .signoff .field label{font-size:10pt;}
     .signoff .field input{font-size:10.5pt; padding:4px 2px;}
-    .signoff .field .sig-label{font-size:8pt; margin-top:4px;}
+    .signoff .field .sig-label{font-size:8.5pt; margin-top:4px;}
     .signoff .field .sig-input{font-size:11pt; margin-top:2px;}
 
-    footer.note{margin-top:5px; font-size:9pt; line-height:1.35; break-inside:avoid;}
-    footer.note .refs{font-size:8.5pt;}
+    footer.note{margin-top:5px; font-size:9.5pt; line-height:1.4; break-inside:avoid;}
+    footer.note .refs{font-size:9pt;}
 
-    .status-badge.pass, .status-badge.fail, table.sum-table td.pass, table.sum-table td.fail,
+    .status-badge.pass, .status-badge.fail, .status-badge.pending, .status-badge.na,
+    .pf.pass, .pf.fail, .pf.pending, .pf.na,
+    table.sum-table td.pass, table.sum-table td.fail, table.sum-table td.pending, table.sum-table td.na,
+    .ov-chip.pass, .ov-chip.fail, .ov-chip.pending, .ov-chip.na,
     .letterhead, .panelhead, .setup, .card, .mech-card, .vb, .result-box, .summary, .signoff, table.sum-table th{
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
@@ -484,13 +513,13 @@
     .eg-wrap{break-inside:avoid; page-break-inside:avoid; margin-top:6px; padding-top:5px;}
     .eg-wrap.eg-empty-state{display:none;}
     .eg-head{margin-bottom:4px;}
-    .eg-title{font-size:9pt;}
+    .eg-title{font-size:9.5pt;}
     .eg-addbtn{display:none;}
     .eg-strip{gap:6px;}
     .eg-thumb{width:150px; break-inside:avoid; page-break-inside:avoid;}
     .eg-thumb img{width:150px; height:auto; max-height:210px;}
     .eg-thumb-actions{display:none;}
-    .eg-caption{border:none !important; background:transparent !important; font-size:8pt !important; padding:1px 0 !important; color:var(--ink-soft) !important;}
+    .eg-caption{border:none !important; background:transparent !important; font-size:8.5pt !important; padding:1px 0 !important; color:var(--ink-soft) !important;}
     .eg-viewer{display:none !important;}
   }
   @media (max-width:640px){
@@ -547,10 +576,172 @@
   
 
 <div class="mainview" id="view-daily" data-mainview="daily">
-  <div class="placeholder-box">
-    <p class="placeholder-title">Daily QA</p>
-    <p class="placeholder-text">Daily QA modules will be added here.</p>
+
+  <div class="tabbar subtabbar no-print">
+    <button class="tabbtn subtabbtn active" data-subtab="daily-sm">Safety &amp; Machine QA</button>
+    <button class="tabbtn subtabbtn" data-subtab="daily-output">Daily Output QA</button>
   </div>
+
+  <div class="subpanel active" id="sub-daily-sm" data-subpanel="daily-sm">
+<div class="panel-standalone" id="panel-daily-sm" data-panel="daily-sm">
+  <div class="panelhead sec-dsm">
+    <p class="lh-title">Daily Safety &amp; Machine QA</p>
+    <p class="lh-sub">Reference: AAPM TG-142 &middot; AERB &mdash; Daily Beam-On Safety Interlocks and Daily Machine (Mechanical) Checks</p>
+    <span class="overall-status" id="dsm-overall" style="margin-left:0; margin-top:8px; display:flex;"></span>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>LINAC Name</label><input type="text" id="dsm-linacname" value="TrueBeam SVC">
+      <label>Make/Model</label><input type="text" id="dsm-makemodel" value="Varian TrueBeam (SVC)">
+      <label>Report No.</label><input type="text" id="dsm-docId" placeholder="MPQA-DSM-##">
+      <label>Date</label><input type="text" id="dsm-date" value="">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-dsm">
+    <div class="g-item">Reference: AAPM TG-142 (Daily) &middot; AERB Safety Code AERB/RF-MED/SC-3 &mdash; individual tolerances per parameter, shown per table</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="dsm-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-dsm" id="dsm-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="mech-card">
+    <h3>1. Safety Tests</h3>
+    <p class="refline">Daily beam-on safety interlock and monitor checks &middot; Ref: AAPM TG-142 (Daily), AERB</p>
+    <table>
+      <tr><th>Parameter</th><th>Result</th><th>Pass/Fail</th></tr>
+      <tr><td>Door interlock beam off</td>
+        <td><select id="dsm-safety-door"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-door-pf"></td></tr>
+      <tr><td>Door closing safety</td>
+        <td><select id="dsm-safety-doorclose"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-doorclose-pf"></td></tr>
+      <tr><td>Audiovisual monitors</td>
+        <td><select id="dsm-safety-av"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-av-pf"></td></tr>
+      <tr><td>Stereotactic interlocks lockout</td>
+        <td><select id="dsm-safety-srs"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-srs-pf"></td></tr>
+      <tr><td>Radiation area monitor if used</td>
+        <td><select id="dsm-safety-ram"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-ram-pf"></td></tr>
+      <tr><td>Beam on indicator</td>
+        <td><select id="dsm-safety-beamon"><option value="">Select</option><option value="yes">YES</option><option value="no">NO</option></select></td>
+        <td id="dsm-safety-beamon-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="dsm-safety" data-eg-label="Daily Safety Tests"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>2. Machine (Mechanical) Tests</h3>
+    <p class="refline">Daily geometric checks by treatment technique &middot; Ref: AAPM TG-142 (Daily), AERB</p>
+    <table>
+      <tr><th rowspan="2">Parameter</th><th colspan="3">Non-IMRT</th><th colspan="3">IMRT</th><th colspan="3">SRS/SBRT</th></tr>
+      <tr><th>Measured (mm)</th><th>Tolerance</th><th>Pass/Fail</th><th>Measured (mm)</th><th>Tolerance</th><th>Pass/Fail</th><th>Measured (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Laser localization</td>
+        <td><input type="number" step="0.1" id="dsm-laser-nonimrt" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-laser-nonimrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-laser-imrt" value="0" data-tol="1.5"></td><td class="tolcell">1.5 mm</td><td id="dsm-laser-imrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-laser-srs" value="0" data-tol="1"></td><td class="tolcell">1 mm</td><td id="dsm-laser-srs-pf"></td></tr>
+      <tr><td>Distance indicator (ODI @ iso)</td>
+        <td><input type="number" step="0.1" id="dsm-odi-nonimrt" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-odi-nonimrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-odi-imrt" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-odi-imrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-odi-srs" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-odi-srs-pf"></td></tr>
+      <tr><td>Collimator size indicator</td>
+        <td><input type="number" step="0.1" id="dsm-coll-nonimrt" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-coll-nonimrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-coll-imrt" value="0" data-tol="2"></td><td class="tolcell">2 mm</td><td id="dsm-coll-imrt-pf"></td>
+        <td><input type="number" step="0.1" id="dsm-coll-srs" value="0" data-tol="1"></td><td class="tolcell">1 mm</td><td id="dsm-coll-srs-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="dsm-mech" data-eg-label="Daily Machine (Mechanical) Tests"></div>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Measured by</label><input type="text" id="dsm-signoff-measured">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="dsm-signoff-measured-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="dsm-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="dsm-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Daily safety and machine QA per AAPM TG-142 (Daily) and AERB Safety Code AERB/RF-MED/SC-3. Tolerances are as
+    listed against each parameter above; overall record passes only if all individual items are within tolerance.
+    <span class="refs">Ref: AAPM TG-142 &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+  </div>
+
+  <div class="subpanel" id="sub-daily-output" data-subpanel="daily-output">
+<div class="panel-standalone" id="panel-daily-output" data-panel="daily-output">
+  <div class="panelhead sec-dout">
+    <p class="lh-title">Daily Output QA</p>
+    <p class="lh-sub">Daily Photon &amp; Electron Absolute Output Constancy Check &mdash; TrueBeam SVC</p>
+    <span class="overall-status" id="dout-overall" style="margin-left:0; margin-top:8px; display:flex;"></span>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>LINAC Name</label><input type="text" id="dout-linacname" value="TrueBeam SVC">
+      <label>Report No.</label><input type="text" id="dout-docId" placeholder="MPQA-DOUT-##">
+      <label>Date</label><input type="text" id="dout-date" value="">
+    </div>
+  </div>
+
+  <div class="globalbar no-print sec-dout">
+    <div class="g-item"><label>Tolerance &plusmn;</label><input type="number" id="dout-tolerance" value="3" step="0.1"><span>%</span></div>
+    <div class="g-item">Output = [M.R &times; N<sub>d,w</sub> &times; K<sub>T,P</sub>] / PDD(10cm); MU = 100, SSD = 100 cm</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="dout-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-dout" id="dout-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="setup">
+    <p class="setup-title" style="color:var(--accent-dark)">Measurement Setup</p>
+    <div class="setup-grid sec-dout">
+      <div class="field"><label>SSD (<span class="unit">cm</span>)</label><input type="text" id="dout-ssd" value="100"></div>
+      <div class="field"><label>MU delivered</label><input type="number" id="dout-mu" value="100"></div>
+      <div class="field"><label>N<sub>d,w</sub> (<span class="unit">cGy/nC</span>)</label><input type="number" id="dout-ndw" step="0.0001" placeholder="chamber calibration factor"></div>
+      <div class="field"><label>T measured (<span class="unit">&deg;C</span>)</label><input type="number" id="dout-t" step="0.1" placeholder="e.g. 20"></div>
+      <div class="field"><label>P measured (<span class="unit">mbar</span>)</label><input type="number" id="dout-p" step="0.01" placeholder="e.g. 1013.25"></div>
+      <div class="field readout"><label>K<sub>T,P</sub> (auto)</label><input type="text" id="dout-ktp" readonly></div>
+    </div>
+  </div>
+
+  <div class="mech-card sec-dout">
+    <h3>3. Dosimetry Tests &mdash; Photon</h3>
+    <p class="refline">Tolerance: &plusmn;3% &middot; Output = [M.R &times; N<sub>d,w</sub> &times; K<sub>T,P</sub>] / PDD(10cm)</p>
+    <table>
+      <tr><th>Energy</th><th>PDD (10cm)</th><th>M.R (<span class="unit">nC</span>) (d = 10 cm)</th><th>Baseline Output (<span class="unit">cGy/MU</span>)</th><th>Output (<span class="unit">cGy/MU</span>) @dmax</th><th>%Dev</th><th>Pass/Fail</th></tr>
+      <tbody id="dout-ph-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="dout-ph" data-eg-label="Daily Output QA — Photon"></div>
+  </div>
+
+  <div class="mech-card sec-dout">
+    <h3>3. Dosimetry Tests &mdash; Electron</h3>
+    <p class="refline">Tolerance: &plusmn;3% &middot; Output = M.R &times; N<sub>d,w</sub> &times; K<sub>T,P</sub> (reading taken at Z<sub>ref</sub>)</p>
+    <table>
+      <tr><th>Energy</th><th>Z<sub>ref</sub> (cm)</th><th>M.R (<span class="unit">nC</span>) @ Z<sub>ref</sub></th><th>Baseline Output (<span class="unit">cGy/MU</span>)</th><th>Output (<span class="unit">cGy/MU</span>) @dmax</th><th>%Dev</th><th>Pass/Fail</th></tr>
+      <tbody id="dout-el-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="dout-el" data-eg-label="Daily Output QA — Electron"></div>
+  </div>
+
+  <div class="field" style="max-width:520px; margin:0 0 20px;">
+    <label>Comment if any</label>
+    <textarea id="dout-comment" rows="2" style="width:100%; font-family:var(--body); font-size:12.5px; padding:7px 9px; border:1px solid var(--line); border-radius:6px; background:#FBFDFC; color:var(--ink); resize:vertical;"></textarea>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>Measured by</label><input type="text" id="dout-signoff-measured">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="dout-signoff-measured-sig"></div>
+    <div class="field"><label>Verified by (RSO / QMP)</label><input type="text" id="dout-signoff-verified">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="dout-signoff-verified-sig"></div>
+  </div>
+
+  <footer class="note">
+    Daily output constancy check per AAPM TG-142 (Daily) and AERB QA schedule. Tolerance &plusmn;3% of baseline
+    output unless a tighter departmental tolerance is specified. Electron output is checked at the reference depth
+    Z<sub>ref</sub> without a PDD(10cm) divisor, per departmental daily-check protocol &mdash; confirm against local
+    commissioning data.
+    <span class="refs">Ref: AAPM TG-142 (Daily) &middot; AERB Safety Code AERB/RF-MED/SC-3</span>
+  </footer>
+</div>
+  </div>
+
 </div>
 
 <div class="mainview active" id="view-monthly" data-mainview="monthly">
@@ -567,6 +758,7 @@
   <div class="panelhead sec-mech">
     <p class="lh-title">Monthly Mechanical Quality Assurance</p>
     <p class="lh-sub">Reference: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM Task Group 142 Report</p>
+    <span class="overall-status" id="mech-overall" style="margin-left:0; margin-top:8px; display:flex;"></span>
     <div class="lh-docbox" style="margin-top:12px;">
       <label>LINAC Name</label><input type="text" id="mech-linacname" value="TrueBeam SVC">
       <label>Make/Model</label><input type="text" id="mech-makemodel" value="Varian TrueBeam (SVC)">
@@ -841,7 +1033,10 @@
   <div class="cards sec-ph" id="ph-mod-cards"></div>
 
   <div class="summary sec-ph">
-    <p class="summary-title">Summary &mdash; Absolute Dose Determination (Photon Beams)</p>
+    <div class="summary-title-row">
+      <p class="summary-title" style="margin:0;">Summary &mdash; Absolute Dose Determination (Photon Beams)</p>
+      <span class="overall-status" id="ph-overall"></span>
+    </div>
     <p class="summary-sub">Determination of the absorbed dose to water in a high-energy photon beam &mdash; IAEA TRS-398</p>
     <table class="sum-table" id="ph-summary-table">
       <thead>
@@ -981,7 +1176,10 @@
   <div class="cards sec-el" id="el-mod-cards"></div>
 
   <div class="summary sec-el">
-    <p class="summary-title">Summary &mdash; Absolute Dose Determination (Electron Beams)</p>
+    <div class="summary-title-row">
+      <p class="summary-title" style="margin:0;">Summary &mdash; Absolute Dose Determination (Electron Beams)</p>
+      <span class="overall-status" id="el-overall"></span>
+    </div>
     <p class="summary-sub">Determination of the absorbed dose to water in an electron beam &mdash; IAEA TRS-398</p>
     <table class="sum-table" id="el-summary-table">
       <thead>
@@ -1096,7 +1294,10 @@
   <div class="cards sec-tpr" id="tpr-mod-cards"></div>
 
   <div class="summary sec-tpr">
-    <p class="summary-title">Summary &mdash; Photon Beam Quality (TPR<sub>20,10</sub>)</p>
+    <div class="summary-title-row">
+      <p class="summary-title" style="margin:0;">Summary &mdash; Photon Beam Quality (TPR<sub>20,10</sub>)</p>
+      <span class="overall-status" id="tpr-overall"></span>
+    </div>
     <table class="sum-table" id="tpr-summary-table">
       <thead>
         <tr>
@@ -1135,10 +1336,194 @@
   </div>
 
   <div class="subpanel" id="sub-imaging" data-subpanel="imaging">
-    <div class="placeholder-box">
-      <p class="placeholder-title">Imaging QA</p>
-      <p class="placeholder-text">Imaging QA modules will be added here.</p>
+<div class="panel-standalone" id="panel-imaging" data-panel="imaging">
+  <div class="panelhead sec-imaging">
+    <p class="lh-title">Monthly Imaging Quality Assurance</p>
+    <p class="lh-sub">OBI (kV) &middot; kV-CBCT &middot; EPID (MV) &mdash; Reference: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM TG-142 (Table VI, Imaging)</p>
+    <span class="overall-status" id="imaging-overall" style="margin-left:0; margin-top:8px; display:flex;"></span>
+    <div class="lh-docbox" style="margin-top:12px;">
+      <label>LINAC Name</label><input type="text" id="imaging-linacname" value="TrueBeam SVC">
+      <label>Imaging Systems</label><input type="text" id="imaging-systems" value="OBI (kV), EPID (aS1200/MV), kV-CBCT">
+      <label>Report No.</label><input type="text" id="imaging-docId" placeholder="MPQA-IMG-##">
+      <label>Date</label><input type="text" id="imaging-date" value="">
+      <label>Month/Year</label><input type="text" id="imaging-monthyear" value="">
     </div>
+  </div>
+
+  <div class="globalbar no-print sec-imaging">
+    <div class="g-item">Reference: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM TG-142 (individual tolerances per parameter, shown per table)</div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="imaging-resetBtn">Reset all fields</button>
+    <button class="btn btn-primary sec-imaging" id="imaging-printBtn">Print / Save PDF</button>
+  </div>
+
+  <div class="mech-card">
+    <h3>1. kV Source &amp; Imager Panel &mdash; Vertical Position Accuracy</h3>
+    <p class="refline">TG-142 Monthly (imaging/treatment coordinate coincidence, geometric accuracy); vendor mechanical spec &middot; Tolerance: &plusmn; 2 mm</p>
+    <table>
+      <tr><th>Component</th><th>Programmed (PRO) Position</th><th>Measured Deviation (mm)</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>kV Source vertical position (+ 14.8 cm source-to-faceplate offset)</td><td class="tolcell">100.0 cm</td>
+        <td><input type="number" step="0.1" id="img-s1-src" value="0" data-tol="2"></td><td class="tolcell">&plusmn; 2 mm</td><td id="img-s1-src-pf"></td></tr>
+      <tr><td>kV Imager vertical position (+ 1.8 cm grid-to-detector offset)</td><td class="tolcell">&minus;50.0 cm</td>
+        <td><input type="number" step="0.1" id="img-s1-imgr" value="0" data-tol="2"></td><td class="tolcell">&plusmn; 2 mm</td><td id="img-s1-imgr-pf"></td></tr>
+    </table>
+    <p class="mlc-note">Actual position = displayed couch/arm readout + stated offset. Offsets are vendor/commissioning values &mdash; verify against acceptance baseline before use.</p>
+    <div class="evidence-gallery" data-eg-key="img-1" data-eg-label="kV Source &amp; Imager Panel — Vertical Position Accuracy"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>2. kV Imager Distance / Scaling Accuracy &mdash; Using Calibration (Blade) Plate</h3>
+    <p class="refline">TG-142 Monthly &mdash; Planar kV Imaging, Scaling: &le; 2 mm</p>
+    <table>
+      <tr><th>Measurement</th><th>Measured Width</th><th>Measured Height</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>10 &times; 10 cm reference image</td>
+        <td><input type="number" step="0.1" id="img-s2-w" placeholder="cm"></td>
+        <td><input type="number" step="0.1" id="img-s2-h" placeholder="cm"></td>
+        <td class="tolcell">&plusmn; 2 mm</td><td id="img-s2-wh-pf"></td></tr>
+      <tr><td>Center to 20 cm marking (radial distance)</td>
+        <td><input type="number" step="0.1" id="img-s2-radial" placeholder="cm"></td>
+        <td class="tolcell">&mdash;</td>
+        <td class="tolcell">&plusmn; 1 mm</td><td id="img-s2-radial-pf"></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-2" data-eg-label="kV Imager Distance / Scaling Accuracy"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>3. OBI (kV Source/Detector) &mdash; Imaging &amp; Treatment Isocenter Coincidence</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT (kV): Geometric distortion / coincidence: &le; 2 mm (non-SRS/SBRT); &le; 1 mm (SRS/SBRT), using cube/ball-bearing phantom</p>
+    <div class="setuprow"><div class="fld2"><label>Tolerance (mm)</label><input type="number" step="0.1" id="img-s3-tol" value="2"></div></div>
+    <table>
+      <tr><th>Isocenter Test</th><th>Gantry Angle</th><th>kV Panel Angle</th><th>Measured (mm)</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s3-body"></tbody>
+    </table>
+    <p class="mlc-note">For SRS/SBRT-dedicated machines, apply &le; 1 mm tolerance (adjust tolerance field above).</p>
+    <div class="evidence-gallery" data-eg-key="img-3" data-eg-label="OBI — Imaging & Treatment Isocenter Coincidence"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>4. EPID (MV) &mdash; Imaging &amp; Treatment Isocenter Coincidence</h3>
+    <p class="refline">TG-142 Monthly &mdash; Planar MV Imaging, four cardinal angles: &le; 2 mm (non-SRS/SBRT); &le; 1 mm (SRS/SBRT)</p>
+    <div class="setuprow"><div class="fld2"><label>Tolerance (mm)</label><input type="number" step="0.1" id="img-s4-tol" value="2"></div></div>
+    <table>
+      <tr><th>Isocenter Test</th><th>Gantry Angle</th><th>Panel Angle</th><th>Measured (mm)</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s4-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-4" data-eg-label="EPID — Imaging & Treatment Isocenter Coincidence"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>5. kV-CBCT &mdash; HU (CT Number) Constancy</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: HU constancy from baseline (using Catphan CTP404 module) &middot; Tolerance: &plusmn; 40 HU</p>
+    <table>
+      <tr><th>Protocol / Insert</th><th>Baseline CT No.</th><th>Tolerance</th><th>Measured CT No.</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s5-body"></tbody>
+    </table>
+    <p class="mlc-note">Baseline values and &plusmn;40 HU action level are institution-defined constancy checks per TG-142 (report states "baseline" without a fixed numeric tolerance); confirm against local commissioning data.</p>
+    <div class="evidence-gallery" data-eg-key="img-5" data-eg-label="kV-CBCT — HU (CT Number) Constancy"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>6. kV-CBCT &mdash; Spatial Linearity (Distance Accuracy)</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: Geometric distortion, baseline (using Catphan CTP404 ramp inserts) &middot; Tolerance: &plusmn; 1%</p>
+    <table>
+      <tr><th>Scan Protocol</th><th>Nominal Distance</th><th>Measured Distance</th><th>%Dev</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s6-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-6" data-eg-label="kV-CBCT — Spatial Linearity"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>7. kV-CBCT &mdash; Image Uniformity &amp; Noise</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: Uniformity and noise, baseline (using Catphan CTP486 module) &middot; HU range: &minus;40 to +40 HU &middot; Max. Diff. &le; 40 HU</p>
+    <table>
+      <tr><th>Scan Protocol</th><th>HU Left</th><th>HU Top</th><th>HU Right</th><th>HU Bottom</th><th>HU Center</th><th>Max. Diff.</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s7-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-7" data-eg-label="kV-CBCT — Image Uniformity & Noise"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>8. kV-CBCT &mdash; Spatial (High) Resolution</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: Spatial resolution, baseline (using Catphan CTP528 module) &middot; Tolerance: &ge; baseline row</p>
+    <table>
+      <tr><th>Scan Protocol</th><th>Baseline Line-pair Row</th><th>Measured Row Resolved</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s8-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-8" data-eg-label="kV-CBCT — Spatial (High) Resolution"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>9. kV-CBCT &mdash; Low Contrast Resolution</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: Contrast, baseline (using Catphan CTP515 module)</p>
+    <table>
+      <tr><th>Scan Protocol</th><th>Supra-Slice Contrast</th><th>Target Size</th><th>Actual Smallest Target Visible</th><th>Pass/Fail</th></tr>
+      <tr><td>Pelvis Scan (2.5 mm slice)</td><td class="tolcell">1%</td><td class="tolcell">15 mm</td>
+        <td><input type="text" id="img-s9-actual" placeholder="mm"></td>
+        <td><select id="img-s9-pf-manual"><option value="">Select</option><option value="pass">Pass</option><option value="fail">Fail</option></select></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-9" data-eg-label="kV-CBCT — Low Contrast Resolution"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>10. kV-CBCT &mdash; Slice Thickness Accuracy</h3>
+    <p class="refline">TG-142 Monthly &mdash; CBCT: baseline (using Catphan CTP404 ramp inserts) &middot; Tolerance: &plusmn; 1 mm</p>
+    <table>
+      <tr><th>Scan Protocol</th><th>Nominal Slice Thickness</th><th>Measured Thickness</th><th>Pass/Fail</th></tr>
+      <tbody id="img-s10-body"></tbody>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-10" data-eg-label="kV-CBCT — Slice Thickness Accuracy"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>11. Planar MV (EPID) Image Contrast / Resolution</h3>
+    <p class="refline">TG-142 Monthly &mdash; Planar MV Imaging: Contrast &amp; Spatial Resolution, baseline (using Las Vegas / Leeds TOR-18 phantom) &middot; Tolerance: &ge; baseline count</p>
+    <table>
+      <tr><th>Parameter</th><th>6 MV (Low-X)</th><th>15 MV (High-X)</th><th>Tolerance</th></tr>
+      <tr><td>Dose per image (MU)</td><td class="tolcell">2 MU</td><td class="tolcell">2 MU</td><td class="tolcell">&mdash;</td></tr>
+      <tr><td>Acquisition technique</td><td class="tolcell">High Quality</td><td class="tolcell">High Quality</td><td class="tolcell">&mdash;</td></tr>
+      <tr><td>No. of contrast holes visible</td>
+        <td><input type="number" step="1" id="img-s11-6mv"></td>
+        <td><input type="number" step="1" id="img-s11-15mv"></td>
+        <td class="tolcell">&ge; baseline count</td></tr>
+      <tr><td>Pass/Fail</td><td colspan="2">
+        <select id="img-s11-pf-manual"><option value="">Select</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+      </td><td></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-11" data-eg-label="Planar MV (EPID) Image Contrast / Resolution"></div>
+  </div>
+
+  <div class="mech-card">
+    <h3>12. Planar kV Image Contrast / Resolution</h3>
+    <p class="refline">TG-142 Monthly &mdash; Planar kV Imaging: Contrast &amp; Spatial Resolution, baseline (using Leeds TOR-18 phantom)</p>
+    <table>
+      <tr><th>Parameter</th><th>Measured</th><th>Tolerance</th><th>Pass/Fail</th></tr>
+      <tr><td>Low-contrast detail score (no. of visible discs)</td>
+        <td><input type="number" step="1" id="img-s12-lowcontrast"></td>
+        <td class="tolcell">&ge; baseline count</td>
+        <td><select id="img-s12-lc-pf-manual"><option value="">Select</option><option value="pass">Pass</option><option value="fail">Fail</option></select></td></tr>
+      <tr><td>High-contrast spatial resolution (line pairs/mm)</td>
+        <td><input type="number" step="0.1" id="img-s12-highcontrast"></td>
+        <td class="tolcell">&ge; baseline value</td>
+        <td><select id="img-s12-hc-pf-manual"><option value="">Select</option><option value="pass">Pass</option><option value="fail">Fail</option></select></td></tr>
+    </table>
+    <div class="evidence-gallery" data-eg-key="img-12" data-eg-label="Planar kV Image Contrast / Resolution"></div>
+  </div>
+
+  <div class="signoff">
+    <div class="field"><label>QA Performed by</label><input type="text" id="imaging-signoff-performed">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="imaging-signoff-performed-sig"></div>
+    <div class="field"><label>Checked by (RSO/QMP)</label><input type="text" id="imaging-signoff-checked">
+      <span class="sig-label">Signature</span><input type="text" class="sig-input" id="imaging-signoff-checked-sig"></div>
+  </div>
+
+  <footer class="note">
+    Imaging QA per AAPM TG-142 (Table VI, Imaging) and AERB Safety Code AERB/RF-MED/SC-3. Monthly tolerances are as
+    listed against each parameter above; overall record passes only if all individually-toleranced items are within
+    tolerance. Items marked "&ge; baseline" are institution-defined constancy checks without a fixed numeric
+    tolerance in the source reference and are recorded as manual Pass/Fail against local baseline.
+    <span class="refs">Ref: AERB Safety Code AERB/RF-MED/SC-3 &middot; AAPM TG-142 (Table VI, Imaging)</span>
+  </footer>
+</div>
   </div>
 
   <div class="subpanel" id="sub-mlc" data-subpanel="mlc">
@@ -1146,6 +1531,7 @@
   <div class="panelhead sec-mlc">
     <p class="lh-title">Monthly Multileaf Collimator (MLC) Quality Assurance</p>
     <p class="lh-sub">Reference: AAPM TG-142 &middot; LoSasso et al. (Med. Phys. 1998) leaf-transmission/DLG method &middot; departmental MLC QA protocol</p>
+    <span class="overall-status" id="mlc-overall" style="margin-left:0; margin-top:8px; display:flex;"></span>
     <div class="lh-docbox" style="margin-top:12px;">
       <label>LINAC Name</label><input type="text" id="mlc-linacname" value="TrueBeam SVC">
       <label>Make/Model</label><input type="text" id="mlc-makemodel" value="Varian TrueBeam (SVC)">
@@ -1967,7 +2353,7 @@ function buildSummaryRow(energy){
     <td id="${prefix}-sum-output">—</td>
     <td id="${prefix}-sum-baseline">—</td>
     <td id="${prefix}-sum-var">—</td>
-    <td id="${prefix}-sum-status">—</td>
+    <td id="${prefix}-sum-status" class="sum-status">—</td>
   `;
   return tr;
 }
@@ -2062,19 +2448,25 @@ function computeCard(energy){
   outEl.textContent = output !== null ? output.toFixed(4) : '—';
 
   let variation = null;
-  let statusText = '—';
-  varEl.classList.remove('pass','fail');
-  statusEl.classList.remove('pass','fail');
+  let statusText = 'PENDING';
+  let statusState = 'pending';
+  varEl.classList.remove('pass','fail','pending');
+  statusEl.classList.remove('pass','fail','pending');
   if(output !== null && baseline){
     variation = Math.abs((output - baseline) * 100 / baseline);
     varEl.textContent = variation.toFixed(3) + '%';
     if(variation <= tolerance){
-      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent = 'PASS'; statusText = 'PASS';
+      statusState = 'pass'; statusText = 'PASS';
     } else {
-      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent = 'FAIL'; statusText = 'FAIL';
+      statusState = 'fail'; statusText = 'FAIL';
     }
+    varEl.classList.add(statusState);
+    statusEl.classList.add(statusState);
+    statusEl.innerHTML = '<span class="sb-icon">' + (statusState === 'pass' ? '\u2713' : '\u2715') + '</span>' + statusText;
   } else {
-    varEl.textContent = '—'; statusEl.textContent = '—';
+    varEl.textContent = '—';
+    statusEl.classList.add('pending');
+    statusEl.innerHTML = '<span class="sb-icon">\u26A0</span>PENDING';
   }
 
   setTxt(`${prefix}-sum-kqqo`, kqqo, 4);
@@ -2089,10 +2481,9 @@ function computeCard(energy){
   const sumStatusEl = document.getElementById(`${prefix}-sum-status`);
   sumVarEl.textContent = variation !== null ? variation.toFixed(3) + '%' : '—';
   sumStatusEl.textContent = statusText;
-  sumVarEl.classList.remove('pass','fail');
-  sumStatusEl.classList.remove('pass','fail');
-  if(statusText === 'PASS'){ sumVarEl.classList.add('pass'); sumStatusEl.classList.add('pass'); }
-  if(statusText === 'FAIL'){ sumVarEl.classList.add('fail'); sumStatusEl.classList.add('fail'); }
+  sumVarEl.classList.remove('pass','fail','pending');
+  sumStatusEl.classList.remove('pass','fail','pending');
+  sumVarEl.classList.add(statusState); sumStatusEl.classList.add(statusState);
 }
 
 function computeAll(){ ENERGIES_ph.forEach(e => computeCard(e)); }
@@ -2222,7 +2613,7 @@ function buildSummaryRow(energy){
     <td id="${prefix}-sum-output">—</td>
     <td id="${prefix}-sum-baseline">—</td>
     <td id="${prefix}-sum-var">—</td>
-    <td id="${prefix}-sum-status">—</td>
+    <td id="${prefix}-sum-status" class="sum-status">—</td>
   `;
   return tr;
 }
@@ -2319,19 +2710,25 @@ function computeCard(energy){
   outEl.textContent = output !== null ? output.toFixed(4) : '—';
 
   let variation = null;
-  let statusText = '—';
-  varEl.classList.remove('pass','fail');
-  statusEl.classList.remove('pass','fail');
+  let statusText = 'PENDING';
+  let statusState = 'pending';
+  varEl.classList.remove('pass','fail','pending');
+  statusEl.classList.remove('pass','fail','pending');
   if(output !== null && baseline){
     variation = Math.abs((output - baseline) * 100 / baseline);
     varEl.textContent = variation.toFixed(3) + '%';
     if(variation <= tolerance){
-      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent = 'PASS'; statusText = 'PASS';
+      statusState = 'pass'; statusText = 'PASS';
     } else {
-      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent = 'FAIL'; statusText = 'FAIL';
+      statusState = 'fail'; statusText = 'FAIL';
     }
+    varEl.classList.add(statusState);
+    statusEl.classList.add(statusState);
+    statusEl.innerHTML = '<span class="sb-icon">' + (statusState === 'pass' ? '\u2713' : '\u2715') + '</span>' + statusText;
   } else {
-    varEl.textContent = '—'; statusEl.textContent = '—';
+    varEl.textContent = '—';
+    statusEl.classList.add('pending');
+    statusEl.innerHTML = '<span class="sb-icon">\u26A0</span>PENDING';
   }
 
   setTxt(`${prefix}-sum-r50`, r50, 2);
@@ -2348,10 +2745,9 @@ function computeCard(energy){
   const sumStatusEl = document.getElementById(`${prefix}-sum-status`);
   sumVarEl.textContent = variation !== null ? variation.toFixed(3) + '%' : '—';
   sumStatusEl.textContent = statusText;
-  sumVarEl.classList.remove('pass','fail');
-  sumStatusEl.classList.remove('pass','fail');
-  if(statusText === 'PASS'){ sumVarEl.classList.add('pass'); sumStatusEl.classList.add('pass'); }
-  if(statusText === 'FAIL'){ sumVarEl.classList.add('fail'); sumStatusEl.classList.add('fail'); }
+  sumVarEl.classList.remove('pass','fail','pending');
+  sumStatusEl.classList.remove('pass','fail','pending');
+  sumVarEl.classList.add(statusState); sumStatusEl.classList.add(statusState);
 }
 
 function computeAll(){ ENERGIES_el.forEach(e => computeCard(e)); }
@@ -2488,7 +2884,7 @@ function buildSummaryRow(energy){
     <td id="${prefix}-sum-baseline">—</td>
     <td id="${prefix}-sum-var">—</td>
     <td id="${prefix}-sum-kq">—</td>
-    <td id="${prefix}-sum-status">—</td>
+    <td id="${prefix}-sum-status" class="sum-status">—</td>
   `;
   return tr;
 }
@@ -2515,18 +2911,23 @@ function computeCard(energy){
   const baseline = num(`${prefix}-baseline`);
   const varEl = document.getElementById(`${prefix}-var`);
   const statusEl = document.getElementById(`${prefix}-status`);
-  varEl.classList.remove('pass','fail'); statusEl.classList.remove('pass','fail');
-  let variation = null, statusText = '—';
+  varEl.classList.remove('pass','fail','pending'); statusEl.classList.remove('pass','fail','pending');
+  let variation = null, statusText = 'PENDING', statusState = 'pending';
   if(tpr !== null && baseline){
     variation = Math.abs((tpr-baseline)*100/baseline);
     varEl.textContent = variation.toFixed(3) + '%';
     if(variation <= tolerance){
-      varEl.classList.add('pass'); statusEl.classList.add('pass'); statusEl.textContent='PASS'; statusText='PASS';
+      statusState='pass'; statusText='PASS';
     } else {
-      varEl.classList.add('fail'); statusEl.classList.add('fail'); statusEl.textContent='FAIL'; statusText='FAIL';
+      statusState='fail'; statusText='FAIL';
     }
+    varEl.classList.add(statusState);
+    statusEl.classList.add(statusState);
+    statusEl.innerHTML = '<span class="sb-icon">' + (statusState==='pass' ? '\u2713' : '\u2715') + '</span>' + statusText;
   } else {
-    varEl.textContent = '—'; statusEl.textContent = '—';
+    varEl.textContent = '—';
+    statusEl.classList.add('pending');
+    statusEl.innerHTML = '<span class="sb-icon">\u26A0</span>PENDING';
   }
 
   setTxt(`${prefix}-sum-m20`, m20, 4);
@@ -2538,9 +2939,8 @@ function computeCard(energy){
   const ss = document.getElementById(`${prefix}-sum-status`);
   sv.textContent = variation !== null ? variation.toFixed(3)+'%' : '—';
   ss.textContent = statusText;
-  sv.classList.remove('pass','fail'); ss.classList.remove('pass','fail');
-  if(statusText==='PASS'){ sv.classList.add('pass'); ss.classList.add('pass'); }
-  if(statusText==='FAIL'){ sv.classList.add('fail'); ss.classList.add('fail'); }
+  sv.classList.remove('pass','fail','pending'); ss.classList.remove('pass','fail','pending');
+  sv.classList.add(statusState); ss.classList.add(statusState);
 }
 
 function computeAll(){ ENERGIES_tpr.forEach(e => computeCard(e)); }
@@ -2604,18 +3004,34 @@ init();
   const DRIVE_AUTOSAVE_NAME = 'PGIMER_TrueBeam_QA_AUTOSAVE.json';
 
   // ================= Mechanical QA: dynamic section builders =================
-  function markPF(cellId, pass){
+  // markPF accepts either a boolean (legacy: true=pass, false=fail) or one of
+  // the state strings 'pass' | 'fail' | 'pending' | 'na'. An empty/incomplete
+  // field must render as PENDING, not FAIL — see wireAbsTol and the recalc()
+  // helpers below, which check for blank inputs before deciding pass/fail.
+  const PF_ICON = {pass:'\u2713', fail:'\u2715', pending:'\u26A0', na:'\u2014'};
+  const PF_LABEL = {pass:'PASS', fail:'FAIL', pending:'PENDING', na:'N/A'};
+  function markPF(cellId, state){
     const el = document.getElementById(cellId);
     if(!el) return;
-    el.innerHTML = '<span class="pf ' + (pass ? 'pass' : 'fail') + '">' + (pass ? 'PASS' : 'FAIL') + '</span>';
+    if(typeof state === 'boolean') state = state ? 'pass' : 'fail';
+    if(!PF_LABEL[state]) state = 'fail';
+    el.innerHTML = '<span class="pf ' + state + '"><span class="pf-icon">' + PF_ICON[state] + '</span>' + PF_LABEL[state] + '</span>';
+  }
+  function fieldsEmpty(){
+    for(let i=0;i<arguments.length;i++){
+      const el = typeof arguments[i] === 'string' ? document.getElementById(arguments[i]) : arguments[i];
+      if(!el || el.value === undefined || el.value.trim() === '') return true;
+    }
+    return false;
   }
   function wireAbsTol(inputId, cellId, tolOverride){
     const inp = document.getElementById(inputId);
     if(!inp) return;
     const tol = tolOverride !== undefined ? tolOverride : parseFloat(inp.dataset.tol);
     function ev(){
+      if(fieldsEmpty(inp)){ markPF(cellId, 'pending'); return; }
       const v = parseFloat(inp.value);
-      markPF(cellId, !isNaN(v) && Math.abs(v) <= tol + 1e-9);
+      markPF(cellId, isNaN(v) ? 'pending' : (Math.abs(v) <= tol + 1e-9 ? 'pass' : 'fail'));
     }
     inp.addEventListener('input', ev);
     ev();
@@ -2640,11 +3056,16 @@ init();
     });
     s4rows.forEach((r,i) => {
       function recalc(){
+        if(fieldsEmpty('s4-m-'+i, 's4-o-'+i)){
+          document.getElementById('s4-var-'+i).textContent = '';
+          markPF('s4-pf-'+i, 'pending');
+          return;
+        }
         const m = parseFloat(document.getElementById('s4-m-'+i).value);
         const o = parseFloat(document.getElementById('s4-o-'+i).value);
         const v = Math.abs(m-o);
         document.getElementById('s4-var-'+i).textContent = isNaN(v) ? '' : v.toFixed(2) + ' mm';
-        markPF('s4-pf-'+i, !isNaN(v) && v <= 2);
+        markPF('s4-pf-'+i, isNaN(v) ? 'pending' : (v <= 2 ? 'pass' : 'fail'));
       }
       document.getElementById('s4-m-'+i).addEventListener('input', recalc);
       document.getElementById('s4-o-'+i).addEventListener('input', recalc);
@@ -2679,6 +3100,14 @@ init();
     s5rows.forEach((r,i) => {
       const tol = Math.min(r.fs * 0.1, 2);
       function recalc(){
+        if(fieldsEmpty('s5-x1-'+i, 's5-x2-'+i, 's5-y1-'+i, 's5-y2-'+i)){
+          document.getElementById('s5-x-'+i).textContent = '';
+          document.getElementById('s5-y-'+i).textContent = '';
+          document.getElementById('s5-dx-'+i).textContent = '';
+          document.getElementById('s5-dy-'+i).textContent = '';
+          markPF('s5-pf-'+i, 'pending');
+          return;
+        }
         const x1 = parseFloat(document.getElementById('s5-x1-'+i).value)||0;
         const x2 = parseFloat(document.getElementById('s5-x2-'+i).value)||0;
         const y1 = parseFloat(document.getElementById('s5-y1-'+i).value)||0;
@@ -2688,7 +3117,7 @@ init();
         document.getElementById('s5-y-'+i).textContent = Y.toFixed(1);
         document.getElementById('s5-dx-'+i).textContent = dX.toFixed(1);
         document.getElementById('s5-dy-'+i).textContent = dY.toFixed(1);
-        markPF('s5-pf-'+i, Math.abs(dX) <= tol + 1e-9 && Math.abs(dY) <= tol + 1e-9);
+        markPF('s5-pf-'+i, (Math.abs(dX) <= tol + 1e-9 && Math.abs(dY) <= tol + 1e-9) ? 'pass' : 'fail');
       }
       ['x1','x2','y1','y2'].forEach(k => document.getElementById('s5-'+k+'-'+i).addEventListener('input', recalc));
       recalc();
@@ -2721,6 +3150,14 @@ init();
       const fs = r.a + r.b;
       const tolerance = Math.min(fs * 0.1, 2);
       function recalc(){
+        if(fieldsEmpty('s6-x1-'+i, 's6-x2-'+i, 's6-y1-'+i, 's6-y2-'+i)){
+          document.getElementById('s6-vx1-'+i).textContent = '';
+          document.getElementById('s6-vx2-'+i).textContent = '';
+          document.getElementById('s6-vy1-'+i).textContent = '';
+          document.getElementById('s6-vy2-'+i).textContent = '';
+          markPF('s6-pf-'+i, 'pending');
+          return;
+        }
         const x1 = parseFloat(document.getElementById('s6-x1-'+i).value)||0;
         const x2 = parseFloat(document.getElementById('s6-x2-'+i).value)||0;
         const y1 = parseFloat(document.getElementById('s6-y1-'+i).value)||0;
@@ -2731,7 +3168,7 @@ init();
         document.getElementById('s6-vy1-'+i).textContent = vy1.toFixed(1);
         document.getElementById('s6-vy2-'+i).textContent = vy2.toFixed(1);
         const ok = [vx1,vx2,vy1,vy2].every(v => Math.abs(v) <= tolerance + 1e-9);
-        markPF('s6-pf-'+i, ok);
+        markPF('s6-pf-'+i, ok ? 'pass' : 'fail');
       }
       ['x1','x2','y1','y2'].forEach(k => document.getElementById('s6-'+k+'-'+i).addEventListener('input', recalc));
       recalc();
@@ -2750,10 +3187,11 @@ init();
         <td id="s7-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty('s7-m0-'+i, 's7-m10-'+i)){ markPF('s7-pf-'+i, 'pending'); return; }
         const v0 = parseFloat(document.getElementById('s7-m0-'+i).value);
         const v10 = parseFloat(document.getElementById('s7-m10-'+i).value);
         const dev0 = Math.abs(v0 - 0), dev10 = Math.abs(v10 - 10);
-        markPF('s7-pf-'+i, !isNaN(v0) && !isNaN(v10) && dev0 <= 1 && dev10 <= 1);
+        markPF('s7-pf-'+i, (!isNaN(v0) && !isNaN(v10) && dev0 <= 1 && dev10 <= 1) ? 'pass' : 'fail');
       }
       document.getElementById('s7-m0-'+i).addEventListener('input', recalc);
       document.getElementById('s7-m10-'+i).addEventListener('input', recalc);
@@ -2773,10 +3211,15 @@ init();
         <td id="${prefix}-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty(prefix+'-o-'+i)){
+          document.getElementById(prefix+'-v-'+i).textContent = '';
+          markPF(prefix+'-pf-'+i, 'pending');
+          return;
+        }
         const o = parseFloat(document.getElementById(prefix+'-o-'+i).value);
         const v = o - r.set;
         document.getElementById(prefix+'-v-'+i).textContent = isNaN(v) ? '' : v.toFixed(1) + '°';
-        markPF(prefix+'-pf-'+i, !isNaN(v) && Math.abs(v) <= 1.0 + 1e-9);
+        markPF(prefix+'-pf-'+i, isNaN(v) ? 'pending' : (Math.abs(v) <= 1.0 + 1e-9 ? 'pass' : 'fail'));
       }
       document.getElementById(prefix+'-o-'+i).addEventListener('input', recalc);
       recalc();
@@ -2796,7 +3239,10 @@ init();
     wireAbsTol('s3-rl-v','s3-rl-v-pf'); wireAbsTol('s3-rl-h','s3-rl-h-pf');
     (function(){
       const inp = document.getElementById('s12-latch');
-      function ev(){ markPF('s12-latch-pf', inp.value.trim().toLowerCase() === 'functional'); }
+      function ev(){
+        if(inp.value.trim() === ''){ markPF('s12-latch-pf', 'pending'); return; }
+        markPF('s12-latch-pf', inp.value.trim().toLowerCase() === 'functional' ? 'pass' : 'fail');
+      }
       inp.addEventListener('input', ev); ev();
     })();
   }
@@ -3222,18 +3668,30 @@ init();
    source are labelled; shared tests use the merged parameter set.
    ========================================================================= */
 (function(){
-  function markPF(cellId, pass){
+  const PF_ICON = {pass:'\u2713', fail:'\u2715', pending:'\u26A0', na:'\u2014'};
+  const PF_LABEL = {pass:'PASS', fail:'FAIL', pending:'PENDING', na:'N/A'};
+  function markPF(cellId, state){
     const el = document.getElementById(cellId);
     if(!el) return;
-    el.innerHTML = '<span class="pf ' + (pass ? 'pass' : 'fail') + '">' + (pass ? 'PASS' : 'FAIL') + '</span>';
+    if(typeof state === 'boolean') state = state ? 'pass' : 'fail';
+    if(!PF_LABEL[state]) state = 'fail';
+    el.innerHTML = '<span class="pf ' + state + '"><span class="pf-icon">' + PF_ICON[state] + '</span>' + PF_LABEL[state] + '</span>';
+  }
+  function fieldsEmpty(){
+    for(let i=0;i<arguments.length;i++){
+      const el = typeof arguments[i] === 'string' ? document.getElementById(arguments[i]) : arguments[i];
+      if(!el || el.value === undefined || el.value.trim() === '') return true;
+    }
+    return false;
   }
   function wireAbsTol(inputId, cellId, tolOverride){
     const inp = document.getElementById(inputId);
     if(!inp) return;
     const tol = tolOverride !== undefined ? tolOverride : parseFloat(inp.dataset.tol);
     function ev(){
+      if(fieldsEmpty(inp)){ markPF(cellId, 'pending'); return; }
       const v = parseFloat(inp.value);
-      markPF(cellId, !isNaN(v) && Math.abs(v) <= tol + 1e-9);
+      markPF(cellId, isNaN(v) ? 'pending' : (Math.abs(v) <= tol + 1e-9 ? 'pass' : 'fail'));
     }
     inp.addEventListener('input', ev);
     ev();
@@ -3271,9 +3729,10 @@ init();
         <td id="mlc-s2-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty('mlc-s2-a-'+i, 'mlc-s2-b-'+i)){ markPF('mlc-s2-pf-'+i, 'pending'); return; }
         const a = parseFloat(document.getElementById('mlc-s2-a-'+i).value);
         const b = parseFloat(document.getElementById('mlc-s2-b-'+i).value);
-        markPF('mlc-s2-pf-'+i, !isNaN(a) && !isNaN(b) && Math.abs(a) <= 1 + 1e-9 && Math.abs(b) <= 1 + 1e-9);
+        markPF('mlc-s2-pf-'+i, (!isNaN(a) && !isNaN(b) && Math.abs(a) <= 1 + 1e-9 && Math.abs(b) <= 1 + 1e-9) ? 'pass' : 'fail');
       }
       document.getElementById('mlc-s2-a-'+i).addEventListener('input', recalc);
       document.getElementById('mlc-s2-b-'+i).addEventListener('input', recalc);
@@ -3303,6 +3762,12 @@ init();
         <td id="mlc-s3-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty('mlc-s3-x1-'+i, 'mlc-s3-x2-'+i, 'mlc-s3-y1-'+i, 'mlc-s3-y2-'+i)){
+          document.getElementById('mlc-s3-dx-'+i).textContent = '';
+          document.getElementById('mlc-s3-dy-'+i).textContent = '';
+          markPF('mlc-s3-pf-'+i, 'pending');
+          return;
+        }
         const x1 = parseFloat(document.getElementById('mlc-s3-x1-'+i).value)||0;
         const x2 = parseFloat(document.getElementById('mlc-s3-x2-'+i).value)||0;
         const y1 = parseFloat(document.getElementById('mlc-s3-y1-'+i).value)||0;
@@ -3310,7 +3775,7 @@ init();
         const dX = ((x1+x2) - r.fs) * 10, dY = ((y1+y2) - r.fs) * 10; // mm
         document.getElementById('mlc-s3-dx-'+i).textContent = dX.toFixed(1) + ' mm';
         document.getElementById('mlc-s3-dy-'+i).textContent = dY.toFixed(1) + ' mm';
-        markPF('mlc-s3-pf-'+i, Math.abs(dX) <= 2 + 1e-9 && Math.abs(dY) <= 2 + 1e-9);
+        markPF('mlc-s3-pf-'+i, (Math.abs(dX) <= 2 + 1e-9 && Math.abs(dY) <= 2 + 1e-9) ? 'pass' : 'fail');
       }
       ['x1','x2','y1','y2'].forEach(k => document.getElementById('mlc-s3-'+k+'-'+i).addEventListener('input', recalc));
       recalc();
@@ -3323,6 +3788,13 @@ init();
   // ---- 5. Coincidence of Optical and Radiation Field ----
   (function(){
     function recalc(){
+      if(fieldsEmpty('mlc-s5-obsx','mlc-s5-obsy')){
+        document.getElementById('mlc-s5-dx').textContent = '';
+        document.getElementById('mlc-s5-dy').textContent = '';
+        markPF('mlc-s5-x-pf', 'pending');
+        markPF('mlc-s5-y-pf', 'pending');
+        return;
+      }
       const setx = parseFloat(document.getElementById('mlc-s5-setx').value)||0;
       const obsx = parseFloat(document.getElementById('mlc-s5-obsx').value)||0;
       const sety = parseFloat(document.getElementById('mlc-s5-sety').value)||0;
@@ -3330,8 +3802,8 @@ init();
       const dx = (obsx - setx) * 10, dy = (obsy - sety) * 10;
       document.getElementById('mlc-s5-dx').textContent = dx.toFixed(1) + ' mm';
       document.getElementById('mlc-s5-dy').textContent = dy.toFixed(1) + ' mm';
-      markPF('mlc-s5-x-pf', Math.abs(dx) <= 2 + 1e-9);
-      markPF('mlc-s5-y-pf', Math.abs(dy) <= 2 + 1e-9);
+      markPF('mlc-s5-x-pf', Math.abs(dx) <= 2 + 1e-9 ? 'pass' : 'fail');
+      markPF('mlc-s5-y-pf', Math.abs(dy) <= 2 + 1e-9 ? 'pass' : 'fail');
     }
     ['mlc-s5-setx','mlc-s5-obsx','mlc-s5-sety','mlc-s5-obsy'].forEach(id => document.getElementById(id).addEventListener('input', recalc));
     recalc();
@@ -3384,14 +3856,18 @@ init();
       });
       s12rows.forEach((r,i) => {
         if(r.ref) return;
+        const mrEmpty = fieldsEmpty('mlc-s12-mr-'+i) || fieldsEmpty('mlc-s12-mr-0');
         const norm = parseFloat(document.getElementById('mlc-s12-norm-'+i).textContent) || 0;
         if(r.isRef){
           document.getElementById('mlc-s12-var-'+i).textContent = 'Reference';
-          markPF('mlc-s12-pf-'+i, true);
+          markPF('mlc-s12-pf-'+i, mrEmpty ? 'pending' : 'pass');
+        } else if(mrEmpty){
+          document.getElementById('mlc-s12-var-'+i).textContent = '';
+          markPF('mlc-s12-pf-'+i, 'pending');
         } else {
           const pctVar = g0norm ? ((norm - g0norm) / g0norm) * 100 : 0;
           document.getElementById('mlc-s12-var-'+i).textContent = pctVar.toFixed(1) + '%';
-          markPF('mlc-s12-pf-'+i, Math.abs(pctVar) <= 3 + 1e-9);
+          markPF('mlc-s12-pf-'+i, Math.abs(pctVar) <= 3 + 1e-9 ? 'pass' : 'fail');
         }
       });
     }
@@ -3418,13 +3894,19 @@ init();
         <td class="tolcell">&le; 2%</td><td id="mlc-s13a-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty('mlc-s13a-open-'+i, 'mlc-s13a-a-'+i, 'mlc-s13a-b-'+i)){
+          document.getElementById('mlc-s13a-pcta-'+i).textContent = '';
+          document.getElementById('mlc-s13a-pctb-'+i).textContent = '';
+          markPF('mlc-s13a-pf-'+i, 'pending');
+          return;
+        }
         const open = parseFloat(document.getElementById('mlc-s13a-open-'+i).value) || 0;
         const a = parseFloat(document.getElementById('mlc-s13a-a-'+i).value) || 0;
         const b = parseFloat(document.getElementById('mlc-s13a-b-'+i).value) || 0;
         const pctA = open ? (a/open)*100 : 0, pctB = open ? (b/open)*100 : 0;
         document.getElementById('mlc-s13a-pcta-'+i).textContent = pctA.toFixed(2) + '%';
         document.getElementById('mlc-s13a-pctb-'+i).textContent = pctB.toFixed(2) + '%';
-        markPF('mlc-s13a-pf-'+i, pctA <= 2 + 1e-9 && pctB <= 2 + 1e-9);
+        markPF('mlc-s13a-pf-'+i, (pctA <= 2 + 1e-9 && pctB <= 2 + 1e-9) ? 'pass' : 'fail');
       }
       ['open','a','b'].forEach(k => document.getElementById('mlc-s13a-'+k+'-'+i).addEventListener('input', recalc));
       recalc();
@@ -3432,13 +3914,18 @@ init();
   })();
   (function(){
     function recalc(){
+      if(fieldsEmpty('mlc-s13b-open', 'mlc-s13b-a', 'mlc-s13b-b')){
+        document.getElementById('mlc-s13b-pct').textContent = '';
+        markPF('mlc-s13b-pf', 'pending');
+        return;
+      }
       const open = parseFloat(document.getElementById('mlc-s13b-open').value) || 0;
       const a = parseFloat(document.getElementById('mlc-s13b-a').value) || 0;
       const b = parseFloat(document.getElementById('mlc-s13b-b').value) || 0;
       const avg = (a+b)/2;
       const pct = open ? (avg/open)*100 : 0;
       document.getElementById('mlc-s13b-pct').textContent = pct.toFixed(2) + '%';
-      markPF('mlc-s13b-pf', pct < 4 - 1e-9);
+      markPF('mlc-s13b-pf', pct < 4 - 1e-9 ? 'pass' : 'fail');
     }
     ['mlc-s13b-open','mlc-s13b-a','mlc-s13b-b'].forEach(id => document.getElementById(id).addEventListener('input', recalc));
     recalc();
@@ -3461,11 +3948,16 @@ init();
         <td class="tolcell">&le; 20%</td><td id="mlc-s14-pf-${i}"></td>`;
       tb.appendChild(tr);
       function recalc(){
+        if(fieldsEmpty('mlc-s14-open-'+i, 'mlc-s14-closed-'+i)){
+          document.getElementById('mlc-s14-pct-'+i).textContent = '';
+          markPF('mlc-s14-pf-'+i, 'pending');
+          return;
+        }
         const open = parseFloat(document.getElementById('mlc-s14-open-'+i).value) || 0;
         const closed = parseFloat(document.getElementById('mlc-s14-closed-'+i).value) || 0;
         const pct = open ? (closed/open)*100 : 0;
         document.getElementById('mlc-s14-pct-'+i).textContent = pct.toFixed(2) + '%';
-        markPF('mlc-s14-pf-'+i, pct <= 20 + 1e-9);
+        markPF('mlc-s14-pf-'+i, pct <= 20 + 1e-9 ? 'pass' : 'fail');
       }
       ['open','closed'].forEach(k => document.getElementById('mlc-s14-'+k+'-'+i).addEventListener('input', recalc));
       recalc();
@@ -3557,6 +4049,455 @@ init();
   const mlcToday = new Date().toISOString().slice(0,10);
   const mlcDateEl = document.getElementById('mlc-date');
   if(mlcDateEl && !mlcDateEl.value) mlcDateEl.value = mlcToday;
+})();
+</script>
+
+<script>
+/* =========================================================================
+   DAILY QA — Safety & Machine QA (dsm-*) and Daily Output QA (dout-*).
+   Reuses the same markPF / fieldsEmpty / wireAbsTol helpers pattern as the
+   Monthly Mechanical section above. Purely additive — no existing calc
+   logic is touched.
+   ========================================================================= */
+(function(){
+  const PF_ICON = {pass:'\u2713', fail:'\u2715', pending:'\u26A0', na:'\u2014'};
+  const PF_LABEL = {pass:'PASS', fail:'FAIL', pending:'PENDING', na:'N/A'};
+  function markPF(cellId, state){
+    const el = document.getElementById(cellId);
+    if(!el) return;
+    if(typeof state === 'boolean') state = state ? 'pass' : 'fail';
+    if(!PF_LABEL[state]) state = 'fail';
+    el.innerHTML = '<span class="pf ' + state + '"><span class="pf-icon">' + PF_ICON[state] + '</span>' + PF_LABEL[state] + '</span>';
+  }
+  function fieldsEmpty(){
+    for(let i=0;i<arguments.length;i++){
+      const el = typeof arguments[i] === 'string' ? document.getElementById(arguments[i]) : arguments[i];
+      if(!el || el.value === undefined || el.value.trim() === '') return true;
+    }
+    return false;
+  }
+  function wireAbsTol(inputId, cellId, tolOverride){
+    const inp = document.getElementById(inputId);
+    if(!inp) return;
+    const tol = tolOverride !== undefined ? tolOverride : parseFloat(inp.dataset.tol);
+    function ev(){
+      if(fieldsEmpty(inp)){ markPF(cellId, 'pending'); return; }
+      const v = parseFloat(inp.value);
+      markPF(cellId, isNaN(v) ? 'pending' : (Math.abs(v) <= tol + 1e-9 ? 'pass' : 'fail'));
+    }
+    inp.addEventListener('input', ev);
+    ev();
+  }
+  function wireYesNo(selId, cellId){
+    const sel = document.getElementById(selId);
+    if(!sel) return;
+    function ev(){
+      if(sel.value === ''){ markPF(cellId, 'pending'); return; }
+      markPF(cellId, sel.value === 'yes' ? 'pass' : 'fail');
+    }
+    sel.addEventListener('change', ev);
+    ev();
+  }
+
+  if(document.getElementById('panel-daily-sm')){
+    // ---- 1. Safety Tests ----
+    ['door','doorclose','av','srs','ram','beamon'].forEach(k => wireYesNo('dsm-safety-'+k, 'dsm-safety-'+k+'-pf'));
+
+    // ---- 2. Machine (Mechanical) Tests ----
+    wireAbsTol('dsm-laser-nonimrt','dsm-laser-nonimrt-pf');
+    wireAbsTol('dsm-laser-imrt','dsm-laser-imrt-pf');
+    wireAbsTol('dsm-laser-srs','dsm-laser-srs-pf');
+    wireAbsTol('dsm-odi-nonimrt','dsm-odi-nonimrt-pf');
+    wireAbsTol('dsm-odi-imrt','dsm-odi-imrt-pf');
+    wireAbsTol('dsm-odi-srs','dsm-odi-srs-pf');
+    wireAbsTol('dsm-coll-nonimrt','dsm-coll-nonimrt-pf');
+    wireAbsTol('dsm-coll-imrt','dsm-coll-imrt-pf');
+    wireAbsTol('dsm-coll-srs','dsm-coll-srs-pf');
+
+    document.getElementById('dsm-printBtn').addEventListener('click', () => window.print());
+    document.querySelectorAll('#panel-daily-sm input[id], #panel-daily-sm select[id]').forEach(inp => {
+      inp.dataset.orig = inp.value;
+    });
+    document.getElementById('dsm-resetBtn').addEventListener('click', () => {
+      if(!confirm('Reset all Safety & Machine QA fields to their default values?')) return;
+      document.querySelectorAll('#panel-daily-sm input[id], #panel-daily-sm select[id]').forEach(inp => {
+        inp.value = inp.dataset.orig !== undefined ? inp.dataset.orig : '';
+        inp.dispatchEvent(new Event('input', {bubbles:true}));
+        inp.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+    });
+    const dsmToday = new Date().toISOString().slice(0,10);
+    const dsmDateEl = document.getElementById('dsm-date');
+    if(dsmDateEl && !dsmDateEl.value) dsmDateEl.value = dsmToday;
+  }
+
+  // ---- 3. Daily Output QA — Photon & Electron ----
+  if(document.getElementById('panel-daily-output')){
+    const PH_ROWS = [ {energy:'6 MV', pdd:65.1}, {energy:'15 MV', pdd:77.2} ];
+    const EL_ROWS = [
+      {energy:'6 MeV', zref:1.3}, {energy:'9 MeV', zref:2.05}, {energy:'12 MeV', zref:2.89},
+      {energy:'15 MeV', zref:3.67}, {energy:'18 MeV', zref:4.42}
+    ];
+
+    const phBody = document.getElementById('dout-ph-body');
+    PH_ROWS.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.energy}</td><td class="tolcell">${r.pdd}%</td>
+        <td><input type="number" step="0.001" id="dout-ph-mr-${i}" placeholder="nC"></td>
+        <td><input type="number" step="0.0001" id="dout-ph-base-${i}" placeholder="cGy/MU"></td>
+        <td id="dout-ph-out-${i}" class="tolcell">—</td>
+        <td id="dout-ph-dev-${i}" class="tolcell">—</td>
+        <td id="dout-ph-pf-${i}"></td>`;
+      phBody.appendChild(tr);
+    });
+
+    const elBody = document.getElementById('dout-el-body');
+    EL_ROWS.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.energy}</td><td class="tolcell">${r.zref}</td>
+        <td><input type="number" step="0.001" id="dout-el-mr-${i}" placeholder="nC"></td>
+        <td><input type="number" step="0.0001" id="dout-el-base-${i}" placeholder="cGy/MU"></td>
+        <td id="dout-el-out-${i}" class="tolcell">—</td>
+        <td id="dout-el-dev-${i}" class="tolcell">—</td>
+        <td id="dout-el-pf-${i}"></td>`;
+      elBody.appendChild(tr);
+    });
+
+    function computeDoutKTP(){
+      const T = num('dout-t'), P = num('dout-p');
+      const T0 = 20, P0 = 1013.25;
+      const out = document.getElementById('dout-ktp');
+      if(T === null || P === null || P === 0){ out.value = '—'; return null; }
+      const ktp = (P0/P) * ((273.2+T)/(273.2+T0));
+      out.value = ktp.toFixed(4);
+      return ktp;
+    }
+
+    function computeDoutRow(prefix, i, mr, baseline, ndw, ktp, tolerance, pddFrac){
+      const outEl = document.getElementById(`${prefix}-out-${i}`);
+      const devEl = document.getElementById(`${prefix}-dev-${i}`);
+      const pfId = `${prefix}-pf-${i}`;
+      let output = null;
+      if(mr !== null && ndw !== null && ktp !== null){
+        output = pddFrac ? (mr * ndw * ktp) / pddFrac : (mr * ndw * ktp);
+      }
+      outEl.textContent = output !== null ? output.toFixed(4) : '—';
+      if(output !== null && baseline){
+        const dev = Math.abs((output - baseline) * 100 / baseline);
+        devEl.textContent = dev.toFixed(2) + '%';
+        markPF(pfId, dev <= tolerance + 1e-9 ? 'pass' : 'fail');
+      } else {
+        devEl.textContent = '—';
+        markPF(pfId, 'pending');
+      }
+    }
+
+    function computeDoutAll(){
+      const ndw = num('dout-ndw');
+      const ktp = computeDoutKTP();
+      const tolerance = num('dout-tolerance') ?? 3;
+      PH_ROWS.forEach((r,i) => {
+        computeDoutRow('dout-ph', i, num(`dout-ph-mr-${i}`), num(`dout-ph-base-${i}`), ndw, ktp, tolerance, r.pdd/100);
+      });
+      EL_ROWS.forEach((r,i) => {
+        computeDoutRow('dout-el', i, num(`dout-el-mr-${i}`), num(`dout-el-base-${i}`), ndw, ktp, tolerance, null);
+      });
+    }
+
+    document.getElementById('panel-daily-output').addEventListener('input', computeDoutAll);
+    document.getElementById('dout-printBtn').addEventListener('click', () => window.print());
+    document.querySelectorAll('#panel-daily-output input[id]').forEach(inp => { inp.dataset.orig = inp.value; });
+    document.getElementById('dout-resetBtn').addEventListener('click', () => {
+      if(!confirm('Reset all Daily Output QA fields to their default values?')) return;
+      document.querySelectorAll('#panel-daily-output input[id]').forEach(inp => {
+        inp.value = inp.dataset.orig !== undefined ? inp.dataset.orig : '';
+      });
+      computeDoutAll();
+    });
+
+    const doutToday = new Date().toISOString().slice(0,10);
+    const doutDateEl = document.getElementById('dout-date');
+    if(doutDateEl && !doutDateEl.value) doutDateEl.value = doutToday;
+
+    computeDoutAll();
+  }
+
+  // ============================ Imaging QA (img-*) ============================
+  if(document.getElementById('panel-imaging')){
+    // ---- Section 3: OBI Isocenter Coincidence ----
+    const s3rows = [ {gantry:0, panel:270}, {gantry:90, panel:0}, {gantry:180, panel:90}, {gantry:270, panel:180} ];
+    const s3body = document.getElementById('img-s3-body');
+    s3rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>KVS/KVD Isocenter</td><td>${r.gantry}&deg;</td><td>${r.panel}&deg;</td>
+        <td><input type="number" step="0.1" id="img-s3-m-${i}"></td><td id="img-s3-pf-${i}"></td>`;
+      s3body.appendChild(tr);
+    });
+
+    // ---- Section 4: EPID Isocenter Coincidence ----
+    const s4rows = [ {gantry:0, panel:270}, {gantry:90, panel:0}, {gantry:180, panel:90}, {gantry:270, panel:180} ];
+    const s4body = document.getElementById('img-s4-body');
+    s4rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>EPID (MV) Isocenter</td><td>${r.gantry}&deg;</td><td>${r.panel}&deg;</td>
+        <td><input type="number" step="0.1" id="img-s4-m-${i}"></td><td id="img-s4-pf-${i}"></td>`;
+      s4body.appendChild(tr);
+    });
+
+    // ---- Section 5: HU Constancy ----
+    const s5rows = [
+      {label:'Standard-dose Head — Air', baseline:-1000}, {label:'Standard-dose Head — Acrylic', baseline:120},
+      {label:'Standard-dose Head — LDPE', baseline:-100}, {label:'Pelvis — Air', baseline:-1000},
+      {label:'Pelvis — Acrylic', baseline:120}, {label:'Pelvis — LDPE', baseline:-100}
+    ];
+    const s5body = document.getElementById('img-s5-body');
+    s5rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td><td class="tolcell">${r.baseline}</td><td class="tolcell">&plusmn; 40 HU</td>
+        <td><input type="number" step="1" id="img-s5-m-${i}"></td><td id="img-s5-pf-${i}"></td>`;
+      s5body.appendChild(tr);
+      function recalc(){
+        const inp = document.getElementById(`img-s5-m-${i}`);
+        if(fieldsEmpty(inp)){ markPF(`img-s5-pf-${i}`, 'pending'); return; }
+        const v = parseFloat(inp.value);
+        markPF(`img-s5-pf-${i}`, isNaN(v) ? 'pending' : (Math.abs(v - r.baseline) <= 40 + 1e-9 ? 'pass' : 'fail'));
+      }
+      document.getElementById(`img-s5-m-${i}`).addEventListener('input', recalc);
+      recalc();
+    });
+
+    // ---- Section 6: Spatial Linearity ----
+    const s6rows = [ {label:'Standard-dose Head Scan (2.5 mm slice)', nominal:50}, {label:'Pelvis Scan (2.5 mm slice)', nominal:50} ];
+    const s6body = document.getElementById('img-s6-body');
+    s6rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td><td class="tolcell">${r.nominal} mm</td>
+        <td><input type="number" step="0.1" id="img-s6-m-${i}"></td>
+        <td id="img-s6-dev-${i}" class="tolcell">—</td><td class="tolcell">&plusmn; 1%</td><td id="img-s6-pf-${i}"></td>`;
+      s6body.appendChild(tr);
+      function recalc(){
+        const inp = document.getElementById(`img-s6-m-${i}`);
+        const devEl = document.getElementById(`img-s6-dev-${i}`);
+        if(fieldsEmpty(inp)){ devEl.textContent = '—'; markPF(`img-s6-pf-${i}`, 'pending'); return; }
+        const v = parseFloat(inp.value);
+        const dev = Math.abs((v - r.nominal) * 100 / r.nominal);
+        devEl.textContent = isNaN(dev) ? '—' : dev.toFixed(2) + '%';
+        markPF(`img-s6-pf-${i}`, isNaN(dev) ? 'pending' : (dev <= 1 + 1e-9 ? 'pass' : 'fail'));
+      }
+      document.getElementById(`img-s6-m-${i}`).addEventListener('input', recalc);
+      recalc();
+    });
+
+    // ---- Section 7: Image Uniformity & Noise ----
+    const s7rows = [ {label:'Std-dose Head (2.5 mm)'}, {label:'Pelvis (2.5 mm)'} ];
+    const s7body = document.getElementById('img-s7-body');
+    s7rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td>
+        <td><input type="number" step="0.1" class="narrow" id="img-s7-l-${i}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="img-s7-t-${i}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="img-s7-r-${i}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="img-s7-b-${i}"></td>
+        <td><input type="number" step="0.1" class="narrow" id="img-s7-c-${i}"></td>
+        <td id="img-s7-diff-${i}" class="tolcell">—</td><td id="img-s7-pf-${i}"></td>`;
+      s7body.appendChild(tr);
+      function recalc(){
+        const ids = ['l','t','r','b','c'].map(k => `img-s7-${k}-${i}`);
+        if(fieldsEmpty(...ids)){ document.getElementById(`img-s7-diff-${i}`).textContent = '—'; markPF(`img-s7-pf-${i}`, 'pending'); return; }
+        const vals = ids.map(id => parseFloat(document.getElementById(id).value));
+        if(vals.some(isNaN)){ document.getElementById(`img-s7-diff-${i}`).textContent = '—'; markPF(`img-s7-pf-${i}`, 'pending'); return; }
+        const diff = Math.max(...vals) - Math.min(...vals);
+        document.getElementById(`img-s7-diff-${i}`).textContent = diff.toFixed(1) + ' HU';
+        markPF(`img-s7-pf-${i}`, diff <= 40 + 1e-9 ? 'pass' : 'fail');
+      }
+      ['l','t','r','b','c'].forEach(k => document.getElementById(`img-s7-${k}-${i}`).addEventListener('input', recalc));
+      recalc();
+    });
+
+    // ---- Section 8: Spatial (High) Resolution ----
+    const s8rows = [
+      {label:'Standard-dose Head Scan (2.5 mm slice)', baselineText:'Row 6 (≈ 7 lp/cm)', baselineRow:6},
+      {label:'Pelvis Scan (2.5 mm slice)', baselineText:'Row 4 (≈ 5 lp/cm)', baselineRow:4}
+    ];
+    const s8body = document.getElementById('img-s8-body');
+    s8rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td><td class="tolcell">${r.baselineText}</td>
+        <td><input type="number" step="1" id="img-s8-m-${i}" placeholder="row #"></td><td id="img-s8-pf-${i}"></td>`;
+      s8body.appendChild(tr);
+      function recalc(){
+        const inp = document.getElementById(`img-s8-m-${i}`);
+        if(fieldsEmpty(inp)){ markPF(`img-s8-pf-${i}`, 'pending'); return; }
+        const v = parseFloat(inp.value);
+        markPF(`img-s8-pf-${i}`, isNaN(v) ? 'pending' : (v >= r.baselineRow ? 'pass' : 'fail'));
+      }
+      document.getElementById(`img-s8-m-${i}`).addEventListener('input', recalc);
+      recalc();
+    });
+
+    // ---- Section 9: Low Contrast Resolution — Pass/Fail is a manual
+    // dropdown (no numeric baseline given in the source record), so no
+    // computed wiring is needed here.
+
+    // ---- Section 10: Slice Thickness Accuracy ----
+    const s10rows = [ {label:'Standard-dose Head Scan', nominal:2.5}, {label:'Pelvis Scan', nominal:2.5} ];
+    const s10body = document.getElementById('img-s10-body');
+    s10rows.forEach((r,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.label}</td><td class="tolcell">${r.nominal} mm</td>
+        <td><input type="number" step="0.1" id="img-s10-m-${i}"></td><td id="img-s10-pf-${i}"></td>`;
+      s10body.appendChild(tr);
+      function recalc(){
+        const inp = document.getElementById(`img-s10-m-${i}`);
+        if(fieldsEmpty(inp)){ markPF(`img-s10-pf-${i}`, 'pending'); return; }
+        const v = parseFloat(inp.value);
+        markPF(`img-s10-pf-${i}`, isNaN(v) ? 'pending' : (Math.abs(v - r.nominal) <= 1 + 1e-9 ? 'pass' : 'fail'));
+      }
+      document.getElementById(`img-s10-m-${i}`).addEventListener('input', recalc);
+      recalc();
+    });
+
+    // ---- Section 1 (abs-tol), reuse shared helper ----
+    wireAbsTol('img-s1-src','img-s1-src-pf');
+    wireAbsTol('img-s1-imgr','img-s1-imgr-pf');
+
+    // ---- Section 2 ----
+    (function(){
+      const w = document.getElementById('img-s2-w'), h = document.getElementById('img-s2-h');
+      function recalc(){
+        if(fieldsEmpty(w,h)){ markPF('img-s2-wh-pf', 'pending'); return; }
+        const dw = Math.abs(parseFloat(w.value) - 10) * 10, dh = Math.abs(parseFloat(h.value) - 10) * 10; // cm→mm dev
+        markPF('img-s2-wh-pf', (dw <= 2 + 1e-9 && dh <= 2 + 1e-9) ? 'pass' : 'fail');
+      }
+      w.addEventListener('input', recalc); h.addEventListener('input', recalc); recalc();
+    })();
+    (function(){
+      const r = document.getElementById('img-s2-radial');
+      function recalc(){
+        if(fieldsEmpty(r)){ markPF('img-s2-radial-pf', 'pending'); return; }
+        const dr = Math.abs(parseFloat(r.value) - 20) * 10; // cm→mm dev
+        markPF('img-s2-radial-pf', dr <= 1 + 1e-9 ? 'pass' : 'fail');
+      }
+      r.addEventListener('input', recalc); recalc();
+    })();
+
+    // ---- Sections 3 & 4: tolerance-driven recalcs ----
+    function wireIsoSection(prefix, tolId, rows){
+      function recalcAll(){
+        const tol = num(tolId) ?? 2;
+        rows.forEach((r,i) => {
+          const inp = document.getElementById(`${prefix}-m-${i}`);
+          if(fieldsEmpty(inp)){ markPF(`${prefix}-pf-${i}`, 'pending'); return; }
+          const v = parseFloat(inp.value);
+          markPF(`${prefix}-pf-${i}`, isNaN(v) ? 'pending' : (Math.abs(v) <= tol + 1e-9 ? 'pass' : 'fail'));
+        });
+      }
+      document.getElementById(tolId).addEventListener('input', recalcAll);
+      rows.forEach((r,i) => document.getElementById(`${prefix}-m-${i}`).addEventListener('input', recalcAll));
+      recalcAll();
+    }
+    wireIsoSection('img-s3', 'img-s3-tol', s3rows);
+    wireIsoSection('img-s4', 'img-s4-tol', s4rows);
+
+    document.getElementById('imaging-printBtn').addEventListener('click', () => window.print());
+    document.querySelectorAll('#panel-imaging input[id], #panel-imaging select[id]').forEach(inp => {
+      inp.dataset.orig = inp.value;
+    });
+    document.getElementById('imaging-resetBtn').addEventListener('click', () => {
+      if(!confirm('Reset all Imaging QA fields to their default values?')) return;
+      document.querySelectorAll('#panel-imaging input[id], #panel-imaging select[id]').forEach(inp => {
+        inp.value = inp.dataset.orig !== undefined ? inp.dataset.orig : '';
+        inp.dispatchEvent(new Event('input', {bubbles:true}));
+        inp.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+    });
+
+    const imgToday = new Date().toISOString().slice(0,10);
+    const imgDateEl = document.getElementById('imaging-date');
+    if(imgDateEl && !imgDateEl.value) imgDateEl.value = imgToday;
+  }
+})();
+</script>
+
+<script>
+/* =========================================================================
+   OVERALL QA STATUS — scans every PASS/FAIL/PENDING/N/A badge inside a
+   panel (.status-badge and .pf spans, plus summary-table status cells) and
+   renders a compact roll-up chip. Purely a read of existing DOM state —
+   does not touch any calculation logic. Re-run on any input/change inside
+   the panel (debounced) and periodically to catch dynamically-built rows.
+   ========================================================================= */
+(function(){
+  const ICONS = {pass:'\u2713', fail:'\u2715', pending:'\u26A0', na:'\u2014'};
+  const LABELS = {pass:'PASS', fail:'FAIL', pending:'PENDING', na:'N/A'};
+
+  function classify(el){
+    if(el.classList.contains('pass')) return 'pass';
+    if(el.classList.contains('fail')) return 'fail';
+    if(el.classList.contains('pending')) return 'pending';
+    if(el.classList.contains('na')) return 'na';
+    return null;
+  }
+
+  function updateOverall(panelId, chipId){
+    const panel = document.getElementById(panelId);
+    const chip = document.getElementById(chipId);
+    if(!panel || !chip) return;
+    const counts = {pass:0, fail:0, pending:0, na:0};
+    panel.querySelectorAll('.pf, .status-badge, .sum-status').forEach(el => {
+      const c = classify(el);
+      if(c) counts[c]++;
+    });
+    const total = counts.pass + counts.fail + counts.pending + counts.na;
+    if(total === 0){ chip.innerHTML = ''; return; }
+
+    let overall = 'pending', overallLabel = 'PENDING';
+    if(counts.fail > 0){ overall = 'fail'; overallLabel = 'FAIL'; }
+    else if(counts.pending > 0){ overall = 'pending'; overallLabel = 'PENDING'; }
+    else if(counts.pass > 0){ overall = 'pass'; overallLabel = 'PASS'; }
+    else { overall = 'na'; overallLabel = 'N/A'; }
+
+    let html = '<span class="ov-chip ' + overall + '"><b>Overall:</b>&nbsp;' + ICONS[overall] + ' ' + overallLabel + '</span>';
+    ['pass','fail','pending','na'].forEach(k => {
+      if(counts[k] > 0){
+        html += '<span class="ov-chip ' + k + '">' + ICONS[k] + ' ' + counts[k] + ' ' + LABELS[k] + '</span>';
+      }
+    });
+    chip.innerHTML = html;
+  }
+
+  const PANELS = [
+    ['panel-ph', 'ph-overall'],
+    ['panel-el', 'el-overall'],
+    ['panel-tpr', 'tpr-overall'],
+    ['panel-mech', 'mech-overall'],
+    ['panel-mlc', 'mlc-overall'],
+    ['panel-imaging', 'imaging-overall'],
+    ['panel-daily-sm', 'dsm-overall'],
+    ['panel-daily-output', 'dout-overall']
+  ];
+
+  function refreshAll(){
+    PANELS.forEach(([panelId, chipId]) => updateOverall(panelId, chipId));
+  }
+
+  PANELS.forEach(([panelId]) => {
+    const panel = document.getElementById(panelId);
+    if(!panel) return;
+    let t;
+    const onChange = () => { clearTimeout(t); t = setTimeout(refreshAll, 80); };
+    panel.addEventListener('input', onChange);
+    panel.addEventListener('change', onChange);
+  });
+
+  // Initial pass, plus a couple of delayed passes to catch dynamically-built
+  // rows (mechanical/MLC tables) and any late Google Drive/init timing.
+  window.addEventListener('DOMContentLoaded', () => {
+    refreshAll();
+    setTimeout(refreshAll, 300);
+    setTimeout(refreshAll, 1000);
+  });
+  window.addEventListener('beforeprint', refreshAll);
 })();
 </script>
 
